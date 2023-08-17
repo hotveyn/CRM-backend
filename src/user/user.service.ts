@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './entities/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,10 +20,34 @@ export class UserService {
   ) {}
 
   async create(userCreateDto: CreateUserDto): Promise<User> {
+    const isUserExist = await this.findByLogin(userCreateDto.login);
+    if (isUserExist) {
+      throw new HttpException(
+        'Пользователь с таким логином уже существует',
+        400,
+      );
+    }
+
+    if (userCreateDto.code) {
+      const user = await this.findByCode(userCreateDto.code);
+      if (user) {
+        throw new HttpException(
+          'Пользователь с таким кодом уже существует',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
     userCreateDto.password = await this.hashService.hash(
       userCreateDto.password,
     );
-    return this.userModel.create(userCreateDto);
+
+    const user = await this.userModel.create(userCreateDto);
+
+    if (!user.code) {
+      user.code = user.id + '100000';
+      await user.save();
+    }
+    return user;
   }
 
   async findByLogin(login: string): Promise<User | null> {
@@ -52,7 +81,7 @@ export class UserService {
   async removeById(id: number): Promise<User | void> {
     const user = await this.findById(id);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Пользователь не найден');
     }
     await user.destroy();
     return user;
@@ -61,7 +90,7 @@ export class UserService {
   async fire(id: number): Promise<User | void> {
     const user = await this.findById(id);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Пользователь не найден');
     }
     user.role = UserRoleEnum.FIRED;
     await user.save();
@@ -71,7 +100,7 @@ export class UserService {
   async unfire(id: number): Promise<User | void> {
     const user = await this.findById(id);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Пользователь не найден');
     }
     user.role = UserRoleEnum.EMPLOYEE;
     await user.save();

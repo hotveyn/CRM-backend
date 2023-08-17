@@ -17,6 +17,7 @@ import { UserRoleEnum } from '../types/user-role.enum';
 import { UserDepartments } from '../../join-tables/user-departments/entities/user-departments.model';
 import { Department } from '../../department/entities/department.model';
 import { OrderStage } from '../../order-stage/entities/order-stage.model';
+import { Exclude } from 'class-transformer';
 
 interface UserCreationAttrs {
   login: string;
@@ -24,6 +25,7 @@ interface UserCreationAttrs {
   first_name: string;
   last_name: string;
   patronymic_name: string;
+  start_work_date: string;
   role: UserRoleEnum;
 }
 
@@ -34,6 +36,7 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column
   login: string;
 
+  @Exclude()
   @AllowNull(false)
   @Column
   password: string;

@@ -2,6 +2,7 @@ import { UserRoleEnum } from '../types/user-role.enum';
 
 export class CreateUserDto {
   login: string;
+  code?: string;
   password: string;
   first_name: string;
   last_name: string;

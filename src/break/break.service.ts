@@ -34,7 +34,10 @@ export class BreakService {
   async update(id: string, updateBreakDto: UpdateBreakDto) {
     const breakToUpdate = await this.breakModel.findOne({ where: { id } });
     if (!breakToUpdate) {
-      throw new HttpException('Break does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Этот брак не существует',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     await breakToUpdate.update(updateBreakDto);
 

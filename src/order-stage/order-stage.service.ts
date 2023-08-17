@@ -27,7 +27,7 @@ export class OrderStageService {
   async delete(id: number): Promise<void> {
     const order = await this.orderStageModel.findOne({ where: { id } });
     if (!order) {
-      throw new HttpException('Order stage does not exist', 400);
+      throw new HttpException('Эта стадия заказа не существует', 400);
     }
     await order.destroy();
   }
@@ -66,7 +66,10 @@ export class OrderStageService {
       where: { id: stage_id, is_active: true },
     });
     if (!orderStage) {
-      throw new HttpException('Active order stage does not exist', 400);
+      throw new HttpException(
+        'Такой активной стадии заказа не существует',
+        400,
+      );
     }
     orderStage.user_id = user_id;
     await orderStage.save();
@@ -85,7 +88,7 @@ export class OrderStageService {
 
     if (!orderStage) {
       throw new HttpException(
-        'Active order stage in progress with user does not exist',
+        'Активная стадия выполнения заказа с этим пользователем не существует',
         400,
       );
     }
@@ -143,7 +146,7 @@ export class OrderStageService {
     });
 
     if (!orderStage) {
-      throw new HttpException('Order stage does not exist', 400);
+      throw new HttpException('Такого этапа заказа не существует', 400);
     }
 
     const orderStageWithBreak = await this.orderStageModel.findOne({
@@ -155,7 +158,7 @@ export class OrderStageService {
 
     if (!orderStageWithBreak) {
       throw new HttpException(
-        'Order stage with this possible break does not exist',
+        'Стадия заказа с таким возможным браком не существует',
         400,
       );
     }

@@ -24,7 +24,7 @@ export class OrderService {
     if (
       await this.orderModel.findOne({ where: { code: createOrderDto.code } })
     ) {
-      throw new HttpException('Order with this code already exists', 400);
+      throw new HttpException('Заказ с таким кодом уже существует', 400);
     }
 
     const payload: IOrderCreationAttrs = {
@@ -78,10 +78,10 @@ export class OrderService {
       },
     });
     if (!order) {
-      throw new HttpException('Order does not exist', 400);
+      throw new HttpException('Этот заказ не существует', 400);
     }
     if (order.status !== OrderStatusEnum.NEW) {
-      throw new HttpException('Order is not new', 400);
+      throw new HttpException('Заказ уже не новый', 400);
     }
 
     order.status = OrderStatusEnum.IN_WORK;
@@ -116,7 +116,7 @@ export class OrderService {
       },
     });
     if (!order) {
-      throw new HttpException('Order does not exist', 400);
+      throw new HttpException('Такой заказ не существует', 400);
     }
 
     await order.update(updateOrderDto);

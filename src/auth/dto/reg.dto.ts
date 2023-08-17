@@ -1,4 +1,10 @@
-import { IsDefined, IsNumber, IsPositive, IsString } from 'class-validator';
+import {
+  IsDefined,
+  IsNumber,
+  IsPositive,
+  IsString,
+  IsDate,
+} from 'class-validator';
 
 export class RegDto {
   @IsDefined()
@@ -20,6 +26,9 @@ export class RegDto {
   @IsDefined()
   @IsString()
   patronymic_name: string;
+
+  @IsDefined()
+  start_work_date: string;
 
   @IsString()
   code?: string;

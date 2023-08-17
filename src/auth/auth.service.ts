@@ -19,18 +19,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   async regEmployee(regDto: RegDto) {
-    const isUserExist = await this.userService.findByLogin(regDto.login);
-    if (isUserExist) {
-      return new HttpException('User with that login already exist', 400);
-    }
-
-    if (regDto.code) {
-      const isCodeExist = await this.userService.findByCode(regDto.code);
-      if (isCodeExist) {
-        return new HttpException('User with that code already exist', 400);
-      }
-    }
-
     const user = await this.userService.create({
       ...regDto,
       role: UserRoleEnum.EMPLOYEE,
@@ -63,7 +51,7 @@ export class AuthService {
     const user: User | null = await this.userService.findByLogin(login);
     if (!user) {
       throw new UnauthorizedException({
-        message: 'Invalid login',
+        message: 'Неправильный логин',
       });
     }
 
@@ -73,7 +61,7 @@ export class AuthService {
     );
 
     if (!passwordIsValid) {
-      throw new UnauthorizedException({ message: 'Invalid password' });
+      throw new UnauthorizedException({ message: 'Неправильный пароль' });
     }
 
     return user;
