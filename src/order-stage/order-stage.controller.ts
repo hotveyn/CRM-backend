@@ -19,13 +19,17 @@ import { BreakOrderStageDto } from './dto/break-order-stage.dto';
 @Controller('order-stage')
 export class OrderStageController {
   constructor(private readonly orderStageService: OrderStageService) {}
-  @Roles(UserRoleEnum.EMPLOYEE)
+  // @Roles(UserRoleEnum.EMPLOYEE)
   @Get('available')
   findAvailableForUser(@Req() req: IRequestJWT) {
     return this.orderStageService.findAvailableForUser(req.user.id);
   }
+  @Get('work')
+  findWorkForUser(@Req() req: IRequestJWT) {
+    return this.orderStageService.findWorkForUser(req.user.id);
+  }
 
-  @Roles(UserRoleEnum.EMPLOYEE)
+  // @Roles(UserRoleEnum.EMPLOYEE)
   @Patch(':id/claim')
   claimStageWithUser(
     @Param('id', ParseIntPipe) id: number,
@@ -34,7 +38,7 @@ export class OrderStageController {
     return this.orderStageService.claimStageWithUser(id, req.user.id);
   }
 
-  @Roles(UserRoleEnum.EMPLOYEE)
+  // @Roles(UserRoleEnum.EMPLOYEE)
   @Patch(':id/ready')
   ready(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestJWT) {
     return this.orderStageService.ready(id, req.user.id);

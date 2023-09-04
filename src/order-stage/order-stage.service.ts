@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { OrderStage } from './entities/order-stage.model';
 import { CreateOrderStageDto } from './dto/create-order-stage.dto';
@@ -8,7 +8,6 @@ import { OrderStatusEnum } from '../order/types/order-status.enum';
 import { Department } from '../department/entities/department.model';
 import { Break } from '../break/entities/break.model';
 import { DepartmentService } from '../department/department.service';
-import { OrderService } from '../order/order.service';
 import { BreakOrderStageDto } from './dto/break-order-stage.dto';
 
 @Injectable()
@@ -45,6 +44,8 @@ export class OrderStageService {
       where: {
         is_active: true,
         department_id: id,
+        user_id: null,
+        break_id: null,
       },
       include: { all: true },
     });
@@ -59,6 +60,25 @@ export class OrderStageService {
     }
 
     return orderStages;
+  }
+
+  async findWorkForUser(id: number) {
+    const user = await this.userService.findById(id);
+    if (!user)
+      throw new HttpException(
+        'Такого пользователя не существует',
+        HttpStatus.BAD_REQUEST,
+      );
+    const stages = await this.orderStageModel.findAll({
+      where: {
+        user_id: user.id,
+        is_active: true,
+      },
+      include: { all: true },
+    });
+    return stages.filter(
+      (stage) => stage.order.status !== OrderStatusEnum.STOP,
+    );
   }
 
   async claimStageWithUser(stage_id: number, user_id: number) {
@@ -138,12 +158,14 @@ export class OrderStageService {
     return possibleBreaks;
   }
 
-  async break(orderStageId: number, breakOrderStageDto: BreakOrderStageDto) {
+  async break(id: number, breakOrderStageDto: BreakOrderStageDto) {
     const orderStage = await this.orderStageModel.findOne({
       where: {
-        order_id: orderStageId,
+        id,
       },
     });
+    orderStage.is_active = false;
+    await orderStage.save();
 
     if (!orderStage) {
       throw new HttpException('Такого этапа заказа не существует', 400);
@@ -154,8 +176,8 @@ export class OrderStageService {
         order_id: orderStage.order_id,
         department_id: breakOrderStageDto.department_id,
       },
+      include: [Order],
     });
-
     if (!orderStageWithBreak) {
       throw new HttpException(
         'Стадия заказа с таким возможным браком не существует',
@@ -164,6 +186,9 @@ export class OrderStageService {
     }
 
     orderStageWithBreak.break_id = breakOrderStageDto.break_id;
+    orderStageWithBreak.is_active = true;
+    orderStageWithBreak.order.status = OrderStatusEnum.BREAK;
+    await orderStageWithBreak.order.save();
     await orderStageWithBreak.save();
     return orderStageWithBreak;
   }

@@ -45,7 +45,6 @@ export class OrderStage extends Model<OrderStage, CreationOrderStageAttrs> {
   order: Order;
 
   @ForeignKey(() => Department)
-  @AllowNull(false)
   @Column({
     type: DataType.BIGINT,
     field: 'department_id',
