@@ -7,8 +7,12 @@ import { OrderStatusEnum } from './types/order-status.enum';
 import { ToWorkDto } from './dto/to-work.dto';
 import { OrderStageService } from '../order-stage/order-stage.service';
 import { OrderStage } from '../order-stage/entities/order-stage.model';
-import { ReclamationService } from '../reclamation/reclamation.service';
 import { UserService } from '../user/user.service';
+import { BreakService } from '../break/break.service';
+import { DepartmentService } from '../department/department.service';
+import { Department } from '../department/entities/department.model';
+import { IBitrixResponse } from '../bitrix/types/IBitrixResponse';
+import { ImportOrderDto } from './dto/import-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -16,19 +20,12 @@ export class OrderService {
     @InjectModel(Order)
     private readonly orderModel: typeof Order,
     private readonly orderStageService: OrderStageService,
-    private readonly userService: UserService,
-    private readonly reclamationService: ReclamationService,
+    private readonly breakService: BreakService,
+    private readonly departmentService: DepartmentService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
-    if (
-      await this.orderModel.findOne({ where: { code: createOrderDto.code } })
-    ) {
-      throw new HttpException('Заказ с таким кодом уже существует', 400);
-    }
-
     const payload: IOrderCreationAttrs = {
-      code: createOrderDto.code,
       name: createOrderDto.name,
       date_start: createOrderDto.date_start,
       date_end: createOrderDto.date_end,
@@ -36,33 +33,97 @@ export class OrderService {
       neon_length: createOrderDto.neon_length,
       type: createOrderDto.type,
       status: OrderStatusEnum.NEW,
+      reclamation_number: createOrderDto.reclamation_number,
     };
-    if (createOrderDto.reclamation) {
-      const reclamation = await this.reclamationService.create(
-        createOrderDto.reclamation,
-      );
-      payload['reclamation_id'] = reclamation.id;
-    }
-    return await this.orderModel.create(payload);
+    const order = await this.orderModel.create(payload);
+    order.code = String(10000 + order.id) + 'M';
+    await order.save();
+    return order;
   }
 
-  async findAllStop() {
-    return await this.orderModel.findAll({
-      where: {
-        status: OrderStatusEnum.STOP,
-      },
-    });
+  async import(dto: ImportOrderDto) {
+    await this.orderModel.create(dto);
   }
+
   async findAll() {
     return await this.orderModel.findAll();
   }
+
+  async findAllInWork() {
+    const orders = await this.orderModel.findAll({
+      where: {
+        status: OrderStatusEnum.IN_WORK,
+      },
+      include: [OrderStage],
+    });
+    const formattedOrders = [];
+    for (const order of orders) {
+      // all departments
+      const departments: Department[] = [];
+
+      for (const order_stage of order.order_stages) {
+        const department = await this.departmentService.findById(
+          +order_stage.department_id,
+        );
+        departments.push(department.dataValues);
+      }
+
+      // active department
+      const orderStageActive = order.order_stages.find(
+        (order_stage) => order_stage.is_active,
+      );
+      const department = await this.departmentService.findById(
+        +orderStageActive.department_id,
+      );
+
+      formattedOrders.push({
+        ...order.dataValues,
+        current_department: department,
+        departments,
+      });
+    }
+    return formattedOrders;
+  }
+  async findAllStop() {
+    const orders = await this.orderModel.findAll({
+      where: {
+        status: OrderStatusEnum.STOP,
+      },
+      include: [OrderStage],
+    });
+    const formattedOrders = [];
+    for (const order of orders) {
+      const orderStageWithBreak = order.order_stages.find(
+        (order_stage) => order_stage.break_id,
+      );
+      const breakOne = await this.breakService.findOne(
+        +orderStageWithBreak.break_id,
+      );
+      formattedOrders.push({ ...order.dataValues, break: breakOne });
+    }
+    return formattedOrders;
+  }
+
   async findAllBreak() {
-    return await this.orderModel.findAll({
+    const orders = await this.orderModel.findAll({
       where: {
         status: OrderStatusEnum.BREAK,
       },
+      include: [OrderStage],
     });
+    const formattedOrders = [];
+    for (const order of orders) {
+      const orderStageWithBreak = order.order_stages.find(
+        (order_stage) => order_stage.break_id,
+      );
+      const breakOne = await this.breakService.findOne(
+        +orderStageWithBreak.break_id,
+      );
+      formattedOrders.push({ ...order.dataValues, break: breakOne });
+    }
+    return formattedOrders;
   }
+
   async findAllNew() {
     return await this.orderModel.findAll({
       where: {
@@ -104,10 +165,6 @@ export class OrderService {
 
     return { ...order.dataValues, stages: orderStages };
   }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} order`;
-  // }
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
     const order = await this.orderModel.findOne({
@@ -166,13 +223,12 @@ export class OrderService {
   }
 
   async info(id: number) {
-    const order = await this.orderModel.findOne({
+    return await this.orderModel.findOne({
       where: {
         id,
       },
       include: [OrderStage],
     });
-    return order;
   }
 
   async remove(id: number) {
@@ -194,14 +250,6 @@ export class OrderService {
     return order;
   }
 
-  async findAllInWork() {
-    return await this.orderModel.findAll({
-      where: {
-        status: OrderStatusEnum.IN_WORK,
-      },
-    });
-  }
-
   setStop(id: number) {
     return this.orderModel.update(
       { status: OrderStatusEnum.STOP },
@@ -214,5 +262,19 @@ export class OrderService {
       { status: OrderStatusEnum.COMPLETED },
       { where: { id } },
     );
+  }
+
+  async restore(id: number) {
+    const order = await this.orderModel.findOne({
+      where: { id, status: OrderStatusEnum.BREAK },
+    });
+
+    if (!order) {
+      throw new HttpException('Такой бракованный заказ не существует', 400);
+    }
+
+    order.status = OrderStatusEnum.IN_WORK;
+    await order.save();
+    return order;
   }
 }

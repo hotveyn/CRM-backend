@@ -5,19 +5,14 @@ import {
   IsNumber,
   IsDateString,
   IsPositive,
-  ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { OrderTypeEnum } from '../types/order-type.enum';
 import { IOrderCreationAttrs } from '../entities/order.model';
-import { CreateReclamationDto } from '../../reclamation/dto/create-reclamation.dto';
 
 export class CreateOrderDto
-  implements Omit<IOrderCreationAttrs, 'status' | 'reclamation_id'>
+  implements Omit<IOrderCreationAttrs, 'status' | 'code'>
 {
-  @IsDefined()
-  @IsString()
-  code: string;
-
   @IsDefined()
   @IsString()
   name: string;
@@ -38,10 +33,10 @@ export class CreateOrderDto
   @IsPositive()
   neon_length: number;
 
-  @ValidateNested()
-  reclamation?: CreateReclamationDto;
-
   @IsDefined()
   @IsEnum(OrderTypeEnum)
   type: OrderTypeEnum;
+
+  @IsString()
+  reclamation_number: string;
 }

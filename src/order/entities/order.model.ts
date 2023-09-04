@@ -1,9 +1,7 @@
 import {
   AllowNull,
-  BelongsTo,
   Column,
   Default,
-  ForeignKey,
   HasMany,
   Max,
   Min,
@@ -14,15 +12,14 @@ import { DataTypes } from 'sequelize';
 import { OrderStage } from '../../order-stage/entities/order-stage.model';
 import { OrderTypeEnum } from '../types/order-type.enum';
 import { OrderStatusEnum } from '../types/order-status.enum';
-import { Reclamation } from '../../reclamation/entities/reclamation.model';
 
 export interface IOrderCreationAttrs {
   name: string;
-  code: string;
+  code?: string;
   date_start: string;
   date_end: string;
   neon_length: number;
-  reclamation_id?: number;
+  reclamation_number?: string;
   comment?: string;
   type: OrderTypeEnum;
   status: OrderStatusEnum;
@@ -43,35 +40,32 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Column(DataTypes.TEXT)
   comment: string;
 
-  @AllowNull(false)
   @Column(DataTypes.ENUM('НЕОН 2', 'НЕОН 2 улица', 'СМАРТ неон', 'НЕОН 1'))
   type: OrderTypeEnum;
 
   @AllowNull(false)
+  @Default(0)
   @Column
   neon_length: number;
 
   @AllowNull(false)
+  @Default(OrderStatusEnum.NEW)
   @Column(DataTypes.ENUM('Новый', 'В работе', 'Брак', 'Готов', 'Приостановлен'))
   status: OrderStatusEnum;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column
   code: string;
-
-  @AllowNull(true)
-  @ForeignKey(() => Reclamation)
-  @Column({ type: DataTypes.BIGINT, field: 'reclamation_id' })
-  reclamation_id: number;
-
-  @BelongsTo(() => Reclamation)
-  reclamation: Reclamation;
 
   @Max(10)
   @Min(0)
   @Default(0)
   @Column({ type: DataTypes.INTEGER, field: 'rating' })
   rating: number;
+
+  @AllowNull(true)
+  @Column({ type: DataTypes.STRING, field: 'reclamation_number' })
+  reclamation_number: string;
 
   @HasMany(() => OrderStage, { onDelete: 'CASCADE' })
   order_stages: OrderStage[];

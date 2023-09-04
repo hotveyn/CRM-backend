@@ -26,11 +26,6 @@ export class OrderController {
     return this.orderService.create(createOrderDto);
   }
 
-  @Get('/:id')
-  info(@Param('id', ParseIntPipe) id: number) {
-    return this.orderService.info(id);
-  }
-
   @Post('/:id/set-rating')
   setRating(@Param('id', ParseIntPipe) id: number, body: SetRatingDto) {
     return this.orderService.setRating(id, body.rating);
@@ -66,9 +61,19 @@ export class OrderController {
     return this.orderService.findAllInWork();
   }
 
-  @Post('/:id/in-work')
+  @Get('/:id')
+  info(@Param('id', ParseIntPipe) id: number) {
+    return this.orderService.info(id);
+  }
+
+  @Patch('/:id/set-work')
   setWork(@Param('id', ParseIntPipe) id: number, @Body() toWorkDto: ToWorkDto) {
     return this.orderService.setWork(id, toWorkDto);
+  }
+
+  @Patch('/:id/restore')
+  restore(@Param('id', ParseIntPipe) id: number) {
+    return this.orderService.restore(id);
   }
 
   @Patch(':id')
@@ -83,6 +88,7 @@ export class OrderController {
   setComplete(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.setComplete(id);
   }
+
   @Patch('/:id/stop')
   setStop(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.setStop(id);
