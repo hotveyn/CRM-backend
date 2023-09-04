@@ -22,11 +22,12 @@ import { Exclude } from 'class-transformer';
 interface UserCreationAttrs {
   login: string;
   password: string;
+  code?: string;
   first_name: string;
   last_name: string;
   patronymic_name: string;
   start_work_date: string;
-  role: UserRoleEnum;
+  role?: UserRoleEnum;
 }
 
 @Table({ tableName: 'users' })

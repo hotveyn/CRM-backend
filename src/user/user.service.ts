@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { HashService } from '../utils/hash.service';
 import { Department } from '../department/entities/department.model';
 import { UserRoleEnum } from './types/user-role.enum';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -112,5 +113,46 @@ export class UserService {
       where: { code },
       include: [Department],
     });
+  }
+
+  async update(updateUserDto: UpdateUserDto, id: number) {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    const payload = {
+      login: updateUserDto.login,
+      password: updateUserDto.password,
+      code: updateUserDto.code,
+      first_name: updateUserDto.first_name,
+      last_name: updateUserDto.last_name,
+      patronymic_name: updateUserDto.patronymic_name,
+      start_work_date: updateUserDto.start_work_date,
+    };
+
+    if (payload.password) {
+      payload.password = await this.hashService.hash(payload.password);
+    }
+
+    await user.update(payload);
+
+    user.departments.forEach((department: Department) => {
+      user.$remove('department', department.id);
+    });
+
+    updateUserDto.departments.forEach((departmentId: number) => {
+      console.log(departmentId);
+      user.$add('department', departmentId);
+    });
+
+    //TODO: ало это жёстко?
+    return [];
+    // if (updateUserDto.password) {
+    //   updateUserDto.password = await this.hashService.hash(
+    //     updateUserDto.password,
+    //   );
+    // }
+    // return user.update(updateUserDto);
   }
 }
