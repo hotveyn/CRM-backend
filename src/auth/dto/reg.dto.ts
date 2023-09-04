@@ -4,6 +4,7 @@ import {
   IsPositive,
   IsString,
   IsDate,
+  IsDateString,
 } from 'class-validator';
 
 export class RegDto {
@@ -27,7 +28,7 @@ export class RegDto {
   @IsString()
   patronymic_name: string;
 
-  @IsDefined()
+  @IsDateString()
   start_work_date: string;
 
   @IsString()
