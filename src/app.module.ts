@@ -9,7 +9,7 @@ import { UtilsModule } from './utils/utils.module';
 import { BreakModule } from './break/break.module';
 import { OrderModule } from './order/order.module';
 import { OrderStageModule } from './order-stage/order-stage.module';
-import { ReclamationModule } from './reclamation/reclamation.module';
+import { BitrixModule } from './bitrix/bitrix.module';
 
 @Module({
   imports: [
@@ -24,7 +24,6 @@ import { ReclamationModule } from './reclamation/reclamation.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadModels: true,
-      synchronize: true,
     }),
     UserModule,
     AuthModule,
@@ -34,7 +33,7 @@ import { ReclamationModule } from './reclamation/reclamation.module';
     BreakModule,
     OrderModule,
     OrderStageModule,
-    ReclamationModule,
+    BitrixModule,
   ],
   controllers: [],
   providers: [],
