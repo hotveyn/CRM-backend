@@ -3,6 +3,7 @@ import { CreateBreakDto } from './dto/create-break.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Break } from './entities/break.model';
 import { UpdateBreakDto } from './dto/update-break.dto';
+import { Department } from '../department/entities/department.model';
 
 @Injectable()
 export class BreakService {
@@ -12,15 +13,11 @@ export class BreakService {
   ) {}
 
   async create(createBreakDto: CreateBreakDto) {
-    // for (const department_id of createBreakDto.departments) {
-    //   await newBreak.$add('departments', department_id);
-    // }
-
     return await this.breakModel.create(createBreakDto);
   }
 
   async findAll() {
-    return await this.breakModel.findAll();
+    return await this.breakModel.findAll({ include: Department });
   }
 
   async findOne(id: number) {

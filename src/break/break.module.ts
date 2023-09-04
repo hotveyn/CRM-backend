@@ -9,5 +9,6 @@ import { Break } from './entities/break.model';
   imports: [AuthModule, SequelizeModule.forFeature([Break])],
   controllers: [BreakController],
   providers: [BreakService],
+  exports: [BreakService],
 })
 export class BreakModule {}

@@ -25,7 +25,7 @@ export class BreakController {
   findAll() {
     return this.breakService.findAll();
   }
-  //
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.breakService.findOne(id);
