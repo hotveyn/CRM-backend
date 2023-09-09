@@ -13,6 +13,8 @@ import { DepartmentService } from '../department/department.service';
 import { Department } from '../department/entities/department.model';
 import { IBitrixResponse } from '../bitrix/types/IBitrixResponse';
 import { ImportOrderDto } from './dto/import-order.dto';
+import { Op } from 'sequelize';
+import { User } from '../user/entities/user.model';
 
 @Injectable()
 export class OrderService {
@@ -33,6 +35,7 @@ export class OrderService {
       neon_length: createOrderDto.neon_length,
       type: createOrderDto.type,
       status: OrderStatusEnum.NEW,
+      status_date: new Date().toISOString(),
       reclamation_number: createOrderDto.reclamation_number,
     };
     const order = await this.orderModel.create(payload);
@@ -42,7 +45,10 @@ export class OrderService {
   }
 
   async import(dto: ImportOrderDto) {
-    await this.orderModel.create(dto);
+    await this.orderModel.create({
+      ...dto,
+      status_date: new Date().toISOString(),
+    });
   }
 
   async findAll() {
@@ -84,6 +90,7 @@ export class OrderService {
     }
     return formattedOrders;
   }
+
   async findAllStop() {
     const orders = await this.orderModel.findAll({
       where: {
@@ -209,16 +216,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.COMPLETED,
       },
-      include: [OrderStage],
-    });
-  }
-
-  //TODO: доделать
-  async findAllCompletedByDepartment(department_id: number) {
-    return await this.orderModel.findAll({
-      where: {
-        status: OrderStatusEnum.COMPLETED,
-      },
+      include: [{ model: OrderStage, include: [Department, User] }],
     });
   }
 
@@ -252,21 +250,28 @@ export class OrderService {
 
   setStop(id: number) {
     return this.orderModel.update(
-      { status: OrderStatusEnum.STOP },
+      { status: OrderStatusEnum.STOP, status_date: new Date().toISOString() },
       { where: { id } },
     );
   }
 
-  setComplete(id: number) {
-    return this.orderModel.update(
-      { status: OrderStatusEnum.COMPLETED },
+  async setComplete(id: number) {
+    return await this.orderModel.update(
+      {
+        status: OrderStatusEnum.COMPLETED,
+        status_date: new Date().toISOString(),
+      },
       { where: { id } },
     );
   }
 
   async restore(id: number) {
     const order = await this.orderModel.findOne({
-      where: { id, status: OrderStatusEnum.BREAK },
+      where: {
+        id,
+        status: OrderStatusEnum.BREAK,
+        status_date: new Date().toISOString(),
+      },
     });
 
     if (!order) {
@@ -276,5 +281,16 @@ export class OrderService {
     order.status = OrderStatusEnum.IN_WORK;
     await order.save();
     return order;
+  }
+
+  async findAllCompletedReclamations() {
+    return await this.orderModel.findAll({
+      where: {
+        status: OrderStatusEnum.COMPLETED,
+        reclamation_number: {
+          [Op.not]: null,
+        },
+      },
+    });
   }
 }

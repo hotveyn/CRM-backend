@@ -26,9 +26,9 @@ export class OrderController {
     return this.orderService.create(createOrderDto);
   }
 
-  @Post('/:id/set-rating')
-  setRating(@Param('id', ParseIntPipe) id: number, body: SetRatingDto) {
-    return this.orderService.setRating(id, body.rating);
+  @Patch('/:id/set-rating')
+  setRating(@Param('id', ParseIntPipe) id: number, @Body() dto: SetRatingDto) {
+    return this.orderService.setRating(id, dto.rating);
   }
 
   @Get('/stop')
@@ -41,9 +41,9 @@ export class OrderController {
     return this.orderService.findAllCompleted();
   }
 
-  @Get('/completed/:id')
-  findAllCompletedByDepartment(@Param('id', ParseIntPipe) id: number) {
-    return this.orderService.findAllCompletedByDepartment(id);
+  @Get('/completed-reclamations')
+  findAllCompletedReclamations() {
+    return this.orderService.findAllCompletedReclamations();
   }
 
   @Get('/break')
