@@ -127,8 +127,11 @@ export class OrderStageService {
       await orderStage.order.save();
       return orderStage;
     }
+
     nextOrderStage.is_active = true;
     orderStage.is_active = false;
+    orderStage.ready_date = new Date().toISOString();
+    console.log(orderStage.ready_date);
     await nextOrderStage.save();
     await orderStage.save();
     return [orderStage, nextOrderStage];

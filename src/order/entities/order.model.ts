@@ -19,6 +19,7 @@ export interface IOrderCreationAttrs {
   date_start: string;
   date_end: string;
   neon_length: number;
+  status_date: string;
   reclamation_number?: string;
   comment?: string;
   type: OrderTypeEnum;
@@ -47,6 +48,10 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Default(0)
   @Column
   neon_length: number;
+
+  @AllowNull(false)
+  @Column(DataTypes.DATE)
+  status_date: string;
 
   @AllowNull(false)
   @Default(OrderStatusEnum.NEW)

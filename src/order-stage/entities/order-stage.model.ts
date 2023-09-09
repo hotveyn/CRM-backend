@@ -61,6 +61,13 @@ export class OrderStage extends Model<OrderStage, CreationOrderStageAttrs> {
   })
   break_id: number;
 
+  @AllowNull(true)
+  @Column({
+    type: DataType.DATE,
+    field: 'ready_date',
+  })
+  ready_date: string;
+
   @BelongsTo(() => Break)
   break: Break;
 

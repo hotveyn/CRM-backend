@@ -11,7 +11,7 @@ import { OrderTypeEnum } from '../types/order-type.enum';
 import { IOrderCreationAttrs } from '../entities/order.model';
 
 export class CreateOrderDto
-  implements Omit<IOrderCreationAttrs, 'status' | 'code'>
+  implements Omit<IOrderCreationAttrs, 'status' | 'code' | 'status_date'>
 {
   @IsDefined()
   @IsString()
