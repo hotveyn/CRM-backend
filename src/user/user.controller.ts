@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Patch,
   Req,
-  SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -53,6 +52,7 @@ export class UserController {
     return this.userService.fire(id);
   }
 
+  @Roles(UserRoleEnum.ADMIN)
   @Patch(':id/unfire')
   unfire(@Param('id', ParseIntPipe) id: number) {
     return this.userService.unfire(id);
@@ -63,6 +63,7 @@ export class UserController {
     return this.userService.removeById(id);
   }
 
+  @Roles(UserRoleEnum.ADMIN)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findById(id);
