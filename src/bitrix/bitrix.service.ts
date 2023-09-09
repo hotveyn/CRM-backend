@@ -16,9 +16,13 @@ export class BitrixService {
     const data: IBitrixResponse = await res.json();
 
     if (+data.result.UF_CRM_1656491267678 < 2) {
-      const title = data.result.TITLE.split(' - ')[1];
+      const split = data.result.TITLE.split('-').map((str) => {
+        return str.trim();
+      });
+      const title = split.length === 1 ? split[0] : split.slice(1).join(' ');
+      console.log(title);
       const dto = new ImportOrderDto(
-        data.result.TITLE,
+        title,
         data.result.BEGINDATE.slice(0, 10),
         data.result.CLOSEDATE.slice(0, 10),
         data.result.ID,
@@ -28,7 +32,10 @@ export class BitrixService {
     }
 
     for (let i = 1; i <= +data.result.UF_CRM_1656491267678; i++) {
-      const title = data.result.TITLE.split(' - ')[1];
+      const split = data.result.TITLE.split('-').map((str) => {
+        return str.trim();
+      });
+      const title = split.length === 1 ? split[0] : split.slice(1).join(' ');
       const dto = new ImportOrderDto(
         title + ' ' + i,
         data.result.BEGINDATE.slice(0, 10),
