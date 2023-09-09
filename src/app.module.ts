@@ -10,6 +10,7 @@ import { BreakModule } from './break/break.module';
 import { OrderModule } from './order/order.module';
 import { OrderStageModule } from './order-stage/order-stage.module';
 import { BitrixModule } from './bitrix/bitrix.module';
+import { StatModule } from './stat/stat.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { BitrixModule } from './bitrix/bitrix.module';
     OrderModule,
     OrderStageModule,
     BitrixModule,
+    StatModule,
   ],
   controllers: [],
   providers: [],
