@@ -5,7 +5,10 @@ import {
   IsString,
   IsDate,
   IsDateString,
+  IsEnum,
 } from 'class-validator';
+import { Default } from 'sequelize-typescript';
+import { UserRoleEnum } from '../../user/types/user-role.enum';
 
 export class RegDto {
   @IsDefined()
@@ -27,6 +30,10 @@ export class RegDto {
   @IsDefined()
   @IsString()
   patronymic_name: string;
+
+  @IsDefined()
+  @IsEnum(UserRoleEnum)
+  role: UserRoleEnum;
 
   @IsDateString()
   start_work_date: string;
