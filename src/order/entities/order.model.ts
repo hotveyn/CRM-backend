@@ -45,8 +45,8 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   type: OrderTypeEnum;
 
   @AllowNull(false)
-  @Default(0)
-  @Column
+  @Default(1)
+  @Column(DataTypes.REAL)
   neon_length: number;
 
   @AllowNull(false)
