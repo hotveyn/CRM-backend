@@ -40,7 +40,7 @@ export class BitrixService {
         title + ' ' + i,
         data.result.BEGINDATE.slice(0, 10),
         data.result.CLOSEDATE.slice(0, 10),
-        String(+data.result.ID + i),
+        String(`${data.result.ID}(${i})`),
       );
       await this.orderService.import(dto);
     }
