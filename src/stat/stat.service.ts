@@ -93,7 +93,7 @@ export class StatService {
         if (stage.break_id) dep.stages_break += 1;
         dep.neon_length += stage.order.neon_length;
       });
-      +dep.neon_length.toFixed(1);
+      dep.neon_length = +dep.neon_length.toFixed(1);
       dep.break_percent =
         ((dep.stages_break / dep.stages) * 100).toFixed(1) + '%';
 
@@ -222,7 +222,7 @@ export class StatService {
           ) {
             serializedUser.neon_length += stage.order.neon_length;
           }
-          +serializedUser.neon_length.toFixed(1);
+          serializedUser.neon_length = +serializedUser.neon_length.toFixed(1);
           serializedUser.stages += 1;
           if (stage.break_id) serializedUser.stages_break += 1;
         });
