@@ -52,7 +52,7 @@ export class OrderStage extends Model<OrderStage, CreationOrderStageAttrs> {
   department_id: number;
 
   @BelongsTo(() => Department)
-  department: Department;
+  department?: Department;
 
   @ForeignKey(() => Break)
   @Column({

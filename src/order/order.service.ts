@@ -71,20 +71,21 @@ export class OrderService {
         const department = await this.departmentService.findById(
           +order_stage.department_id,
         );
-        departments.push(department.dataValues);
+
+        departments.push(department ? department.dataValues : null);
       }
 
       // active department
       const orderStageActive = order.order_stages.find(
         (order_stage) => order_stage.is_active,
       );
-      const department = await this.departmentService.findById(
+      const current_department = await this.departmentService.findById(
         +orderStageActive.department_id,
       );
 
       formattedOrders.push({
         ...order.dataValues,
-        current_department: department,
+        current_department,
         departments,
       });
     }

@@ -123,6 +123,7 @@ export class StatService {
 
     return { orders, orders_stopped, stopped_percent };
   }
+
   async getOrdersReclamationStat(
     startDate = '2004-07-13T22:02:32.395Z',
     endDate = '2077-11-05T22:02:32.395Z',
@@ -216,13 +217,16 @@ export class StatService {
         });
 
         stages.map((stage) => {
-          if (
-            stage.department.name === 'Пайка' ||
-            stage.department.name === 'Сборка'
-          ) {
-            serializedUser.neon_length += stage.order.neon_length;
+          if (stage.department) {
+            if (
+              stage.department.name === 'Пайка' ||
+              stage.department.name === 'Сборка'
+            ) {
+              serializedUser.neon_length += stage.order.neon_length;
+              serializedUser.neon_length =
+                +serializedUser.neon_length.toFixed(1);
+            }
           }
-          serializedUser.neon_length = +serializedUser.neon_length.toFixed(1);
           serializedUser.stages += 1;
           if (stage.break_id) serializedUser.stages_break += 1;
         });
