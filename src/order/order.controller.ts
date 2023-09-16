@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
@@ -15,6 +16,7 @@ import { ToWorkDto } from './dto/to-work.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { SetRatingDto } from './dto/set-rating.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { IRequestJWT } from '../auth/interfaces/IRequestJWT';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order')
@@ -67,8 +69,12 @@ export class OrderController {
   }
 
   @Patch('/:id/set-work')
-  setWork(@Param('id', ParseIntPipe) id: number, @Body() toWorkDto: ToWorkDto) {
-    return this.orderService.setWork(id, toWorkDto);
+  setWork(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() toWorkDto: ToWorkDto,
+    @Req() req: IRequestJWT,
+  ) {
+    return this.orderService.setWork(id, toWorkDto, req.user.id);
   }
 
   @Patch('/:id/restore')

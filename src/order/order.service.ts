@@ -140,7 +140,7 @@ export class OrderService {
     });
   }
 
-  async setWork(id: number, inWorkDto: ToWorkDto) {
+  async setWork(id: number, inWorkDto: ToWorkDto, manager_id) {
     const order = await this.orderModel.findOne({
       where: {
         id,
@@ -154,6 +154,7 @@ export class OrderService {
     }
 
     order.status = OrderStatusEnum.IN_WORK;
+    order.manager_id = manager_id;
     await order.save();
     const orderStages: OrderStage[] = [];
 

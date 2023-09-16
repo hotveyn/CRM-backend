@@ -1,7 +1,9 @@
 import {
   AllowNull,
   Column,
+  DataType,
   Default,
+  ForeignKey,
   HasMany,
   Max,
   Min,
@@ -12,6 +14,8 @@ import { DataTypes } from 'sequelize';
 import { OrderStage } from '../../order-stage/entities/order-stage.model';
 import { OrderTypeEnum } from '../types/order-type.enum';
 import { OrderStatusEnum } from '../types/order-status.enum';
+import { Break } from '../../break/entities/break.model';
+import { User } from '../../user/entities/user.model';
 
 export interface IOrderCreationAttrs {
   name: string;
@@ -25,6 +29,7 @@ export interface IOrderCreationAttrs {
   type: OrderTypeEnum;
   status: OrderStatusEnum;
 }
+
 @Table({ tableName: 'orders' })
 export class Order extends Model<Order, IOrderCreationAttrs> {
   @Column
@@ -67,6 +72,13 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Default(0)
   @Column({ type: DataTypes.INTEGER, field: 'rating' })
   rating: number;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'break_id',
+  })
+  manager_id: number;
 
   @AllowNull(true)
   @Column({ type: DataTypes.STRING, field: 'reclamation_number' })
