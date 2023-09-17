@@ -18,6 +18,7 @@ import { UserDepartments } from '../../join-tables/user-departments/entities/use
 import { Department } from '../../department/entities/department.model';
 import { OrderStage } from '../../order-stage/entities/order-stage.model';
 import { Exclude } from 'class-transformer';
+import { Order } from '../../order/entities/order.model';
 
 interface UserCreationAttrs {
   login: string;
@@ -59,7 +60,7 @@ export class User extends Model<User, UserCreationAttrs> {
   patronymic_name: string;
 
   @AllowNull(false)
-  @Column(DataTypes.ENUM('admin', 'manager', 'employee', 'fired'))
+  @Column(DataTypes.ENUM('admin', 'manager', 'employee', 'fired', 'storage'))
   role: UserRoleEnum;
 
   @IsDate
@@ -74,4 +75,10 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => OrderStage, { onDelete: 'SET NULL' })
   orderStages: OrderStage[];
+
+  @HasMany(() => Order, 'manager_id')
+  managed_orders: Order[];
+
+  @HasMany(() => Order, 'storage_id')
+  storeged_orders: Order[];
 }
