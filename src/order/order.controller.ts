@@ -17,6 +17,8 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { SetRatingDto } from './dto/set-rating.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IRequestJWT } from '../auth/interfaces/IRequestJWT';
+import { Roles } from '../auth/roles.decorator';
+import { UserRoleEnum } from '../user/types/user-role.enum';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order')
@@ -63,6 +65,21 @@ export class OrderController {
     return this.orderService.findAllInWork();
   }
 
+  @Get('/resources/new')
+  findAllNewResources() {
+    return this.orderService.findAllNewResources();
+  }
+
+  @Get('/resources/enough')
+  findAllEnoughResources() {
+    return this.orderService.findAllEnoughResources();
+  }
+
+  @Get('/resources/not-enough')
+  findAllNotEnoughResources() {
+    return this.orderService.findAllNotEnoughResources();
+  }
+
   @Get('/:id')
   info(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.info(id);
@@ -99,6 +116,32 @@ export class OrderController {
   setStop(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.setStop(id);
   }
+
+  // @Roles(UserRoleEnum.STORAGE)
+  // @Patch('/:id/resources/enough')
+  // setResourcesEnough(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Req() req: IRequestJWT,
+  // ) {
+  //   return this.orderService.setResourcesEnough(id, req.user.id);
+  // }
+
+  // @Roles(UserRoleEnum.STORAGE)
+  // @Patch('/:id/resources/not-enough')
+  // setResourcesNotEnough(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Req() req: IRequestJWT,
+  // ) {
+  //   return this.orderService.setResourcesNotEnough(id, req.user.id);
+  // }
+  // @Roles(UserRoleEnum.STORAGE)
+  // @Patch('/:id/resources/null')
+  // setResourcesNull(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Req() req: IRequestJWT,
+  // ) {
+  //   return this.orderService.setResourcesNull(id, req.user.id);
+  // }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

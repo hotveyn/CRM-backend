@@ -7,11 +7,9 @@ import { OrderStatusEnum } from './types/order-status.enum';
 import { ToWorkDto } from './dto/to-work.dto';
 import { OrderStageService } from '../order-stage/order-stage.service';
 import { OrderStage } from '../order-stage/entities/order-stage.model';
-import { UserService } from '../user/user.service';
 import { BreakService } from '../break/break.service';
 import { DepartmentService } from '../department/department.service';
 import { Department } from '../department/entities/department.model';
-import { IBitrixResponse } from '../bitrix/types/IBitrixResponse';
 import { ImportOrderDto } from './dto/import-order.dto';
 import { Op } from 'sequelize';
 import { User } from '../user/entities/user.model';
@@ -140,7 +138,7 @@ export class OrderService {
     });
   }
 
-  async setWork(id: number, inWorkDto: ToWorkDto, manager_id) {
+  async setWork(id: number, inWorkDto: ToWorkDto, manager_id: number) {
     const order = await this.orderModel.findOne({
       where: {
         id,
@@ -292,6 +290,63 @@ export class OrderService {
         reclamation_number: {
           [Op.not]: null,
         },
+      },
+    });
+  }
+
+  async setResourcesEnough(id: number, storage_id: number) {
+    return await this.orderModel.update(
+      { storage_id, enough_resources: true },
+      {
+        where: {
+          id,
+        },
+      },
+    );
+  }
+
+  async setResourcesNotEnough(id: number, storage_id: number) {
+    return await this.orderModel.update(
+      { storage_id, enough_resources: false },
+      {
+        where: {
+          id,
+        },
+      },
+    );
+  }
+  async setResourcesNull(id: number, storage_id: number) {
+    return await this.orderModel.update(
+      { storage_id, enough_resources: null },
+      {
+        where: {
+          id,
+        },
+      },
+    );
+  }
+
+  async findAllNewResources() {
+    return await this.orderModel.findAll({
+      where: {
+        enough_resources: null,
+        status: OrderStatusEnum.IN_WORK,
+      },
+    });
+  }
+
+  async findAllEnoughResources() {
+    return await this.orderModel.findAll({
+      where: {
+        enough_resources: true,
+      },
+    });
+  }
+
+  async findAllNotEnoughResources() {
+    return await this.orderModel.findAll({
+      where: {
+        enough_resources: false,
       },
     });
   }
