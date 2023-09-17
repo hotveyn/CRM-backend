@@ -14,11 +14,16 @@ export class AuthService {
     private readonly hashService: HashService,
     private readonly jwtService: JwtService,
   ) {}
+
   async regEmployee(regDto: RegDto) {
     const user = await this.userService.create(regDto);
 
-    for (const department_id of regDto.departments) {
-      await user.$add('departments', department_id);
+    if (regDto.departments) {
+      await Promise.all(
+        regDto.departments.map(async (department_id) => {
+          await user.$add('departments', department_id);
+        }),
+      );
     }
 
     return user;
