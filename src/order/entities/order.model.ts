@@ -1,5 +1,6 @@
 import {
   AllowNull,
+  BelongsTo,
   Column,
   DataType,
   Default,
@@ -63,9 +64,11 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Column(DataTypes.ENUM('Новый', 'В работе', 'Брак', 'Готов', 'Приостановлен'))
   status: OrderStatusEnum;
 
-  @AllowNull(true)
   @Column
   code: string;
+
+  @Column
+  enough_resources: boolean;
 
   @Max(10)
   @Min(0)
@@ -73,17 +76,29 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Column({ type: DataTypes.INTEGER, field: 'rating' })
   rating: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.BIGINT,
-    field: 'break_id',
-  })
-  manager_id: number;
-
-  @AllowNull(true)
   @Column({ type: DataTypes.STRING, field: 'reclamation_number' })
   reclamation_number: string;
 
   @HasMany(() => OrderStage, { onDelete: 'CASCADE' })
   order_stages: OrderStage[];
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'storage_id',
+  })
+  storage_id: number;
+
+  @BelongsTo(() => User)
+  storage: User;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'manager_id',
+  })
+  manager_id: number;
+
+  @BelongsTo(() => User)
+  manager: User;
 }
