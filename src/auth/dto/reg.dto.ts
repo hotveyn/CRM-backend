@@ -41,8 +41,7 @@ export class RegDto {
   @IsString()
   code?: string;
 
-  @IsDefined()
   @IsNumber({ allowNaN: false, allowInfinity: false }, { each: true })
   @IsPositive({ each: true })
-  departments: number[];
+  departments?: number[];
 }

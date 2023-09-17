@@ -38,7 +38,7 @@ export class OrderStageController {
     return this.orderStageService.claimStageWithUser(id, req.user.id);
   }
 
-  // @Roles(UserRoleEnum.EMPLOYEE)
+  @Roles(UserRoleEnum.EMPLOYEE)
   @Patch(':id/ready')
   ready(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestJWT) {
     return this.orderStageService.ready(id, req.user.id);

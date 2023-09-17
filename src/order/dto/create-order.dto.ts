@@ -30,7 +30,6 @@ export class CreateOrderDto
 
   @IsDefined()
   @IsNumber()
-  @IsPositive()
   neon_length: number;
 
   @IsDefined()
