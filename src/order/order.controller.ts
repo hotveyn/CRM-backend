@@ -117,31 +117,31 @@ export class OrderController {
     return this.orderService.setStop(id);
   }
 
-  // @Roles(UserRoleEnum.STORAGE)
-  // @Patch('/:id/resources/enough')
-  // setResourcesEnough(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Req() req: IRequestJWT,
-  // ) {
-  //   return this.orderService.setResourcesEnough(id, req.user.id);
-  // }
+  @Roles(UserRoleEnum.STORAGE)
+  @Patch('/:id/resources/enough')
+  setResourcesEnough(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: IRequestJWT,
+  ) {
+    return this.orderService.setResourcesEnough(id, req.user.id);
+  }
 
-  // @Roles(UserRoleEnum.STORAGE)
-  // @Patch('/:id/resources/not-enough')
-  // setResourcesNotEnough(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Req() req: IRequestJWT,
-  // ) {
-  //   return this.orderService.setResourcesNotEnough(id, req.user.id);
-  // }
-  // @Roles(UserRoleEnum.STORAGE)
-  // @Patch('/:id/resources/null')
-  // setResourcesNull(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Req() req: IRequestJWT,
-  // ) {
-  //   return this.orderService.setResourcesNull(id, req.user.id);
-  // }
+  @Roles(UserRoleEnum.STORAGE)
+  @Patch('/:id/resources/not-enough')
+  setResourcesNotEnough(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: IRequestJWT,
+  ) {
+    return this.orderService.setResourcesNotEnough(id, req.user.id);
+  }
+  @Roles(UserRoleEnum.STORAGE)
+  @Patch('/:id/resources/null')
+  setResourcesNull(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: IRequestJWT,
+  ) {
+    return this.orderService.setResourcesNull(id, req.user.id);
+  }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
