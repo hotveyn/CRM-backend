@@ -79,12 +79,11 @@ export class OrderService {
       );
 
       const current_department = orderStageActive.department.name;
-      const current_user =
-        orderStageActive.user.last_name +
-        ' ' +
-        orderStageActive.user.first_name +
-        ' ' +
-        orderStageActive.user.patronymic_name;
+      const current_user = [
+        orderStageActive.user.last_name,
+        orderStageActive.user.first_name,
+        orderStageActive.user.patronymic_name,
+      ].join(' ');
 
       formattedOrders.push({
         ...order.dataValues,
