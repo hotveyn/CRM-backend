@@ -52,8 +52,9 @@ export class StatService {
             };
           }
           counts[stage.department.name].stages += 1;
-          counts[stage.department.name].neon_length +=
-            +stage.order.neon_length.toFixed(1);
+          counts[stage.department.name].neon_length += stage.order.neon_length;
+          counts[stage.department.name].neon_length =
+            +counts[stage.department.name].neon_length.toFixed(1);
           if (stage.break_id) counts[stage.department.name].break_stages += 1;
         }
       });
