@@ -58,7 +58,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.IN_WORK,
       },
-      include: [OrderStage],
+      include: [{ model: OrderStage, include: [Department, User] }],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -77,13 +77,19 @@ export class OrderService {
       const orderStageActive = order.order_stages.find(
         (order_stage) => order_stage.is_active,
       );
-      const current_department = await this.departmentService.findById(
-        +orderStageActive.department_id,
-      );
+
+      const current_department = orderStageActive.department.name;
+      const current_user =
+        orderStageActive.user.last_name +
+        ' ' +
+        orderStageActive.user.first_name +
+        ' ' +
+        orderStageActive.user.patronymic_name;
 
       formattedOrders.push({
         ...order.dataValues,
         current_department,
+        current_user,
         departments,
       });
     }
