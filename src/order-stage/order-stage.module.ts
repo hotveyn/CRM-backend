@@ -6,10 +6,11 @@ import { OrderStageController } from './order-stage.controller';
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { DepartmentModule } from '../department/department.module';
+import { User } from '../user/entities/user.model';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([OrderStage]),
+    SequelizeModule.forFeature([OrderStage, User]),
     UserModule,
     AuthModule,
     DepartmentModule,

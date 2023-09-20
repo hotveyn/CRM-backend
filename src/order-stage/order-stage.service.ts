@@ -9,11 +9,13 @@ import { Department } from '../department/entities/department.model';
 import { Break } from '../break/entities/break.model';
 import { DepartmentService } from '../department/department.service';
 import { BreakOrderStageDto } from './dto/break-order-stage.dto';
+import { User } from '../user/entities/user.model';
 
 @Injectable()
 export class OrderStageService {
   constructor(
     @InjectModel(OrderStage) private orderStageModel: typeof OrderStage,
+    @InjectModel(User) private userModel: typeof User,
     private readonly userService: UserService,
     private readonly departmentService: DepartmentService,
   ) {}
@@ -52,14 +54,36 @@ export class OrderStageService {
   }
 
   async findAvailableForUser(id: number) {
-    const user = await this.userService.findById(id);
-    const orderStages: OrderStage[] = [];
-    for (const department of user.departments) {
-      const stages = await this.findAllActiveByDepartmentId(department.id);
-      orderStages.push(...stages);
-    }
-
-    return orderStages;
+    const user = await this.userModel.findOne({
+      where: {
+        id,
+      },
+      include: [
+        {
+          model: Department,
+          include: [
+            {
+              model: OrderStage,
+              where: {
+                is_active: true,
+                user_id: null,
+                break_id: null,
+              },
+              include: [Order],
+            },
+          ],
+        },
+      ],
+    });
+    return user.departments;
+    // const user = await this.userService.findById(id);
+    // const orderStages: OrderStage[] = [];
+    // for (const department of user.departments) {
+    //   const stages = await this.findAllActiveByDepartmentId(department.id);
+    //   orderStages.push(...stages);
+    // }
+    //
+    // return orderStages;
   }
 
   async findWorkForUser(id: number) {
