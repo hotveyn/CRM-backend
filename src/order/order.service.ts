@@ -79,11 +79,14 @@ export class OrderService {
       );
 
       const current_department = orderStageActive.department.name;
-      const current_user = [
-        orderStageActive.user.last_name,
-        orderStageActive.user.first_name,
-        orderStageActive.user.patronymic_name,
-      ].join(' ');
+      let current_user = null;
+      if (orderStageActive.user) {
+        current_user = [
+          orderStageActive.user.last_name,
+          orderStageActive.user.first_name,
+          orderStageActive.user.patronymic_name,
+        ].join(' ');
+      }
 
       formattedOrders.push({
         ...order.dataValues,
@@ -320,6 +323,7 @@ export class OrderService {
       },
     );
   }
+
   async setResourcesNull(id: number, storage_id: number) {
     return await this.orderModel.update(
       { storage_id, enough_resources: null },
