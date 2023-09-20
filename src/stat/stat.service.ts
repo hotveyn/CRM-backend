@@ -43,16 +43,18 @@ export class StatService {
     const counts = new Map();
     if (user) {
       user.orderStages.forEach((stage) => {
-        if (!(stage.department.name in counts)) {
-          counts[stage.department.name] = {
-            stages: 0,
-            break_stages: 0,
-            neon_length: 0,
-          };
+        if (stage.department) {
+          if (!(stage.department.name in counts)) {
+            counts[stage.department.name] = {
+              stages: 0,
+              break_stages: 0,
+              neon_length: 0,
+            };
+          }
+          counts[stage.department.name].stages += 1;
+          counts[stage.department.name].neon_length += stage.order.neon_length;
+          if (stage.break_id) counts[stage.department.name].break_stages += 1;
         }
-        counts[stage.department.name].stages += 1;
-        counts[stage.department.name].neon_length += stage.order.neon_length;
-        if (stage.break_id) counts[stage.department.name].break_stages += 1;
       });
     }
 
