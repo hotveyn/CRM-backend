@@ -10,7 +10,7 @@ import { jwtConstants } from './constants';
     forwardRef(() => UserModule),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '30d' },
+      signOptions: { expiresIn: '720d' },
     }),
   ],
   providers: [AuthService],
