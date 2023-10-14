@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { BreakService } from './break.service';
 import { CreateBreakDto } from './dto/create-break.dto';
 import { UpdateBreakDto } from './dto/update-break.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('break')
 export class BreakController {
   constructor(private readonly breakService: BreakService) {}
