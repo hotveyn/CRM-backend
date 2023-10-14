@@ -197,11 +197,7 @@ export class StatService {
         const serializedUser = {
           id: user.id,
           code: user.code,
-          full_name: [
-            user.last_name,
-            user.first_name,
-            user.patronymic_name,
-          ].join(' '),
+          full_name: `${user.last_name} ${user.first_name} ${user.patronymic_name}`,
           departments: user.departments,
           neon_length: 0,
           stages: 0,
@@ -221,7 +217,10 @@ export class StatService {
         });
 
         stages.map((stage) => {
-          if (stage.department) {
+          if (stage.break_id) {
+            serializedUser.stages_break += 1;
+            return;
+          } else if (stage.department) {
             if (
               stage.department.name === 'Пайка' ||
               stage.department.name === 'Сборка'
@@ -232,7 +231,6 @@ export class StatService {
             }
           }
           serializedUser.stages += 1;
-          if (stage.break_id) serializedUser.stages_break += 1;
         });
 
         serializedUser.break_percent = serializedUser.stages

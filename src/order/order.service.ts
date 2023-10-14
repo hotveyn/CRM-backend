@@ -70,7 +70,7 @@ export class OrderService {
           +order_stage.department_id,
         );
 
-        departments.push(department ? department.dataValues : null);
+        if (department) departments.push(department.dataValues);
       }
 
       // active department
@@ -78,14 +78,14 @@ export class OrderService {
         (order_stage) => order_stage.is_active,
       );
 
-      const current_department = orderStageActive.department.name;
+      let current_department = null;
       let current_user = null;
-      if (orderStageActive.user) {
-        current_user = [
-          orderStageActive.user.last_name,
-          orderStageActive.user.first_name,
-          orderStageActive.user.patronymic_name,
-        ].join(' ');
+      if (orderStageActive) {
+        if (orderStageActive.department)
+          current_department = orderStageActive.department.name;
+
+        if (orderStageActive.user)
+          current_user = `${orderStageActive.user.last_name} ${orderStageActive.user.first_name} ${orderStageActive.user.patronymic_name}`;
       }
 
       formattedOrders.push({
