@@ -11,11 +11,12 @@ import { OrderModule } from './order/order.module';
 import { OrderStageModule } from './order-stage/order-stage.module';
 import { BitrixModule } from './bitrix/bitrix.module';
 import { StatModule } from './stat/stat.module';
+import 'dotenv/config'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
