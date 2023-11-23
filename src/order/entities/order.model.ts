@@ -37,11 +37,11 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   name: string;
 
   @AllowNull(false)
-  @Column(DataTypes.DATE)
+  @Column(DataTypes.DATEONLY)
   date_start: string;
 
   @AllowNull(false)
-  @Column(DataTypes.DATE)
+  @Column(DataTypes.DATEONLY)
   date_end: string;
 
   @Column(DataTypes.TEXT)
@@ -56,7 +56,7 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   neon_length: number;
 
   @AllowNull(false)
-  @Column(DataTypes.DATE)
+  @Column(DataTypes.DATEONLY)
   status_date: string;
 
   @AllowNull(false)

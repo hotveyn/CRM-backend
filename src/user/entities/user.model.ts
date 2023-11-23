@@ -64,7 +64,7 @@ export class User extends Model<User, UserCreationAttrs> {
   role: UserRoleEnum;
 
   @IsDate
-  @Column(DataTypes.DATE)
+  @Column(DataTypes.DATEONLY)
   start_work_date: string;
 
   @HasMany(() => UserDepartments, { onDelete: 'CASCADE' })
