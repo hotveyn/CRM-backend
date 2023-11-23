@@ -5,7 +5,9 @@
 # ENV
 .env
 .env.dev
+.env.development
 .env.prod
+.env.production
 
 # Logs
 logs
