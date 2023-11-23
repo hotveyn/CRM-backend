@@ -17,6 +17,7 @@ export interface CreationOrderStageAttrs {
   order_id: number;
   department_id: number;
   break_id?: number;
+  price_percent: number;
   user_id?: number;
   in_order: number;
   is_active: boolean;
@@ -50,6 +51,13 @@ export class OrderStage extends Model<OrderStage, CreationOrderStageAttrs> {
     field: 'department_id',
   })
   department_id: number;
+
+  @AllowNull(false)
+  @Column({
+    type: DataType.REAL,
+    field: 'price_percent',
+  })
+  price_percent: number;
 
   @BelongsTo(() => Department)
   department?: Department;

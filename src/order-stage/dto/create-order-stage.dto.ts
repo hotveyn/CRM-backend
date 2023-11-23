@@ -11,6 +11,10 @@ export class CreateOrderStageDto {
 
   @IsNumber()
   @IsDefined()
+  price_percent: number;
+
+  @IsNumber()
+  @IsDefined()
   in_order: number;
 
   @IsNumber()
