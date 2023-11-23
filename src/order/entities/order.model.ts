@@ -13,21 +13,21 @@ import {
 } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
 import { OrderStage } from '../../order-stage/entities/order-stage.model';
-import { OrderTypeEnum } from '../types/order-type.enum';
 import { OrderStatusEnum } from '../types/order-status.enum';
-import { Break } from '../../break/entities/break.model';
 import { User } from '../../user/entities/user.model';
+import { OrderType } from '../../order-type/entities/order-type.entity';
 
 export interface IOrderCreationAttrs {
   name: string;
   code?: string;
   date_start: string;
   date_end: string;
-  neon_length: number;
+  neon_length?: number;
+  price: number;
   status_date: string;
   reclamation_number?: string;
   comment?: string;
-  type: OrderTypeEnum;
+  type_id: number;
   status: OrderStatusEnum;
 }
 
@@ -47,11 +47,8 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Column(DataTypes.TEXT)
   comment: string;
 
-  @Column(DataTypes.ENUM('НЕОН 2', 'НЕОН 2 улица', 'СМАРТ неон', 'НЕОН 1'))
-  type: OrderTypeEnum;
-
-  @AllowNull(false)
-  @Default(1)
+  @AllowNull(true)
+  @Default(0)
   @Column(DataTypes.REAL)
   neon_length: number;
 
@@ -67,6 +64,15 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
   @Column
   code: string;
 
+  @AllowNull(false)
+  @Min(0)
+  @Default(0)
+  @Column({
+    type: DataType.REAL,
+    field: 'price',
+  })
+  price: number;
+
   @Column
   enough_resources: boolean;
 
@@ -78,6 +84,16 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
 
   @Column({ type: DataTypes.STRING, field: 'reclamation_number' })
   reclamation_number: string;
+
+  @ForeignKey(() => OrderType)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'type_id',
+  })
+  type_id: number;
+
+  @BelongsTo(() => OrderType, { onDelete: 'SET NULL' })
+  type: number;
 
   @HasMany(() => OrderStage, { onDelete: 'CASCADE' })
   order_stages: OrderStage[];
