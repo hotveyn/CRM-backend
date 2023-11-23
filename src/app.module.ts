@@ -11,7 +11,9 @@ import { OrderModule } from './order/order.module';
 import { OrderStageModule } from './order-stage/order-stage.module';
 import { BitrixModule } from './bitrix/bitrix.module';
 import { StatModule } from './stat/stat.module';
-import 'dotenv/config'
+import { OrderTypeModule } from './order-type/order-type.module';
+import { PrefabModule } from './prefab/prefab.module';
+import 'dotenv/config';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import 'dotenv/config'
     OrderStageModule,
     BitrixModule,
     StatModule,
+    OrderTypeModule,
+    PrefabModule,
   ],
   controllers: [],
   providers: [],
