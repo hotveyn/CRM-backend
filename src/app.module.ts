@@ -13,6 +13,8 @@ import { BitrixModule } from './bitrix/bitrix.module';
 import { StatModule } from './stat/stat.module';
 import { OrderTypeModule } from './order-type/order-type.module';
 import { PrefabModule } from './prefab/prefab.module';
+import { MonetaryMatrixGroupModule } from './monetary-matrix-group/monetary-matrix-group.module';
+import { MonetaryMatrixModule } from './monetary-matrix/monetary-matrix.module';
 import 'dotenv/config';
 
 @Module({
@@ -41,6 +43,8 @@ import 'dotenv/config';
     StatModule,
     OrderTypeModule,
     PrefabModule,
+    MonetaryMatrixGroupModule,
+    MonetaryMatrixModule,
   ],
   controllers: [],
   providers: [],
