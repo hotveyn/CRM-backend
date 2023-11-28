@@ -1,12 +1,12 @@
 import { IPrefabCreationAttrs } from '../entities/prefab.entity';
 import { IsDefined, IsNumber, IsString } from 'class-validator';
 
+interface ICreatePrefabDtoRequired extends NonNullable<IPrefabCreationAttrs> {}
+interface ICreatePrefabDtoOptionally
+  extends Omit<IPrefabCreationAttrs, keyof ICreatePrefabDtoRequired> {}
+
 export class CreatePrefabDto
-  implements
-    Pick<
-      IPrefabCreationAttrs,
-      'name' | 'code' | 'type_id' | 'comment' | 'price'
-    >
+  implements ICreatePrefabDtoRequired, ICreatePrefabDtoOptionally
 {
   @IsString()
   code?: string;

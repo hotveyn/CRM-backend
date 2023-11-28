@@ -9,33 +9,36 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { IOrderCreationAttrs } from '../../order/entities/order.model';
 import { DataTypes } from 'sequelize';
 import { OrderType } from '../../order-type/entities/order-type.entity';
 
-export interface IPrefabCreationAttrs
-  extends Pick<
-    IOrderCreationAttrs,
-    'name' | 'code' | 'type_id' | 'comment' | 'price'
-  > {
-  name: string;
-  code?: string;
-  type_id: number;
-  comment?: string;
+export interface IPrefab {
+  comment: string | null;
+  code: string | null;
+  type_id: number | null;
   price: number;
+  name: string;
+  type: OrderType | null;
 }
 
-@Table({ tableName: 'prefab' })
-export class Prefab extends Model<Prefab, IPrefabCreationAttrs> {
+type required = Pick<IPrefab, 'price' | 'name'>;
+type optional = Partial<Pick<IPrefab, 'comment' | 'code' | 'type_id'>>;
+export interface IPrefabCreationAttrs extends required, optional {}
+
+@Table({ tableName: 'prefabs' })
+export class Prefab
+  extends Model<Prefab, IPrefabCreationAttrs>
+  implements IPrefab
+{
   @AllowNull(false)
   @Column
   name: string;
 
   @Column
-  code?: string;
+  code: string | null;
 
   @Column(DataTypes.TEXT)
-  comment: string;
+  comment: string | null;
 
   @AllowNull(false)
   @Min(0)
@@ -51,8 +54,8 @@ export class Prefab extends Model<Prefab, IPrefabCreationAttrs> {
     type: DataType.BIGINT,
     field: 'type_id',
   })
-  type_id: number;
+  type_id: number | null;
 
   @BelongsTo(() => OrderType, { onDelete: 'SET NULL' })
-  type: number;
+  type: OrderType | null;
 }

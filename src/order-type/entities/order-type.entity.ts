@@ -8,12 +8,20 @@ import {
 } from 'sequelize-typescript';
 import { Order } from '../../order/entities/order.model';
 
-interface OrderTypeCreationAttrs {
+interface IOrderType {
   name: string;
+  orders: Order[];
 }
 
-@Table({ tableName: 'order_type' })
-export class OrderType extends Model<OrderType, OrderTypeCreationAttrs> {
+interface IOrderTypeCreationAttrsRequired extends Pick<IOrderType, 'name'> {}
+export interface OrderTypeCreationAttrs
+  extends IOrderTypeCreationAttrsRequired {}
+
+@Table({ tableName: 'order_types' })
+export class OrderType
+  extends Model<OrderType, OrderTypeCreationAttrs>
+  implements IOrderType
+{
   @AllowNull(false)
   @Column({
     type: DataType.STRING,

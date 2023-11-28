@@ -1,28 +1,21 @@
 import { IPrefabCreationAttrs } from '../entities/prefab.entity';
-import { IsDefined, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
-export class UpdatePrefabDto
-  implements
-    Pick<
-      IPrefabCreationAttrs,
-      'name' | 'code' | 'type_id' | 'comment' | 'price'
-    >
-{
+interface IUpdatePrefabDto extends Partial<IPrefabCreationAttrs> {}
+
+export class UpdatePrefabDto implements IUpdatePrefabDto {
   @IsString()
   code?: string;
 
   @IsString()
   comment?: string;
 
-  @IsDefined()
   @IsString()
-  name: string;
+  name?: string;
 
-  @IsDefined()
   @IsNumber()
-  price: number;
+  price?: number;
 
-  @IsDefined()
   @IsNumber()
-  type_id: number;
+  type_id?: number;
 }
