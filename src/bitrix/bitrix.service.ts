@@ -20,7 +20,7 @@ export class BitrixService {
         return str.trim();
       });
       const title = split.length === 1 ? split[0] : split.slice(1).join(' ');
-      console.log(title);
+
       const dto = new ImportOrderDto(
         title,
         data.result.BEGINDATE.slice(0, 10),
