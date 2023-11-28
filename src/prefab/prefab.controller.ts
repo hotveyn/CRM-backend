@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PrefabService } from './prefab.service';
 import { CreatePrefabDto } from './dto/create-prefab.dto';
 import { UpdatePrefabDto } from './dto/update-prefab.dto';
@@ -18,17 +27,20 @@ export class PrefabController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.prefabService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.prefabService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePrefabDto: UpdatePrefabDto) {
-    return this.prefabService.update(+id, updatePrefabDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePrefabDto: UpdatePrefabDto,
+  ) {
+    return this.prefabService.update(id, updatePrefabDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.prefabService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.prefabService.remove(id);
   }
 }

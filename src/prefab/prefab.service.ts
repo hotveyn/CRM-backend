@@ -8,26 +8,26 @@ import { Prefab } from './entities/prefab.entity';
 export class PrefabService {
   constructor(
     @InjectModel(Prefab)
-    private readonly PrefabModel: Prefab,
+    private readonly PrefabModel: typeof Prefab,
   ) {}
 
-  create(createPrefabDto: CreatePrefabDto) {
-    return 'This action adds a new prefab';
+  async create(createPrefabDto: CreatePrefabDto) {
+    return await this.PrefabModel.create(createPrefabDto);
   }
 
-  findAll() {
-    return `This action returns all prefab`;
+  async findAll() {
+    return await this.PrefabModel.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} prefab`;
+  async findOne(id: number) {
+    return await this.PrefabModel.findOne({ where: { id } });
   }
 
-  update(id: number, updatePrefabDto: UpdatePrefabDto) {
-    return `This action updates a #${id} prefab`;
+  async update(id: number, updatePrefabDto: UpdatePrefabDto) {
+    return await this.PrefabModel.update(updatePrefabDto, { where: { id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} prefab`;
+  async remove(id: number) {
+    return await this.PrefabModel.destroy({ where: { id } });
   }
 }
