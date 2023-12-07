@@ -3,11 +3,9 @@ import {
   IsNumber,
   IsPositive,
   IsString,
-  IsDate,
   IsDateString,
   IsEnum,
 } from 'class-validator';
-import { Default } from 'sequelize-typescript';
 import { UserRoleEnum } from '../../user/types/user-role.enum';
 
 export class RegDto {

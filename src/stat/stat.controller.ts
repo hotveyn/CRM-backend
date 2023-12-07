@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { StatService } from './stat.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IRequestJWT } from '../auth/interfaces/IRequestJWT';

@@ -28,6 +28,6 @@ export class OrderType
   })
   name: string;
 
-  @HasMany(() => Order)
+  @HasMany(() => Order, { onDelete: 'SET NULL' })
   orders: Order[];
 }
