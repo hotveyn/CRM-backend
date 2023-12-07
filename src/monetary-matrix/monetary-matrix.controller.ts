@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MonetaryMatrixService } from './monetary-matrix.service';
 import { CreateMonetaryMatrixDto } from './dto/create-monetary-matrix.dto';
 import { UpdateMonetaryMatrixDto } from './dto/update-monetary-matrix.dto';
@@ -23,7 +31,10 @@ export class MonetaryMatrixController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMonetaryMatrixDto: UpdateMonetaryMatrixDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMonetaryMatrixDto: UpdateMonetaryMatrixDto,
+  ) {
     return this.monetaryMatrixService.update(+id, updateMonetaryMatrixDto);
   }
 
