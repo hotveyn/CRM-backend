@@ -13,9 +13,7 @@ import { BitrixModule } from './bitrix/bitrix.module';
 import { StatModule } from './stat/stat.module';
 import { OrderTypeModule } from './order-type/order-type.module';
 import { PrefabModule } from './prefab/prefab.module';
-import { MonetaryMatrixGroupModule } from './monetary-matrix-group/monetary-matrix-group.module';
 import { MonetaryMatrixModule } from './monetary-matrix/monetary-matrix.module';
-import 'dotenv/config';
 
 @Module({
   imports: [
@@ -30,6 +28,7 @@ import 'dotenv/config';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadModels: true,
+      synchronize: false,
     }),
     UserModule,
     AuthModule,
@@ -43,7 +42,6 @@ import 'dotenv/config';
     StatModule,
     OrderTypeModule,
     PrefabModule,
-    MonetaryMatrixGroupModule,
     MonetaryMatrixModule,
   ],
   controllers: [],
