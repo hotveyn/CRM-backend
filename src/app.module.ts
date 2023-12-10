@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +20,7 @@ import { MonetaryMatrixModule } from './monetary-matrix/monetary-matrix.module';
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
+      isGlobal: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
