@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMonetaryMatrixDto } from './dto/create-monetary-matrix.dto';
 import { UpdateMonetaryMatrixDto } from './dto/update-monetary-matrix.dto';
+import { InjectModel } from '@nestjs/sequelize';
+import { MonetaryMatrix } from './entities/monetary-matrix.entity';
 
 @Injectable()
 export class MonetaryMatrixService {
+  constructor(
+    @InjectModel(MonetaryMatrix)
+    private readonly MonetaryMatrixModel: typeof MonetaryMatrix,
+  ) {}
   create(createMonetaryMatrixDto: CreateMonetaryMatrixDto) {
-    return 'This action adds a new monetaryMatrix';
+    return this.MonetaryMatrixModel.create(createMonetaryMatrixDto);
   }
 
   findAll() {
-    return `This action returns all monetaryMatrix`;
+    return this.MonetaryMatrixModel.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} monetaryMatrix`;
+  findOne(order_type_id: number, department_id: number) {
+    return this.MonetaryMatrixModel.findOne({
+      where: { order_type_id, department_id },
+    });
   }
 
-  update(id: number, updateMonetaryMatrixDto: UpdateMonetaryMatrixDto) {
-    return `This action updates a #${id} monetaryMatrix`;
+  update(
+    order_type_id: number,
+    department_id: number,
+    updateMonetaryMatrixDto: UpdateMonetaryMatrixDto,
+  ) {
+    return this.MonetaryMatrixModel.update(updateMonetaryMatrixDto, {
+      where: { order_type_id, department_id },
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} monetaryMatrix`;
+    return this.MonetaryMatrixModel.destroy({ where: { id } });
   }
 }
