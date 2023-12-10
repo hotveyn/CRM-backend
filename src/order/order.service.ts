@@ -13,6 +13,7 @@ import { Department } from '../department/entities/department.model';
 import { ImportOrderDto } from './dto/import-order.dto';
 import { Op } from 'sequelize';
 import { User } from '../user/entities/user.model';
+import { OrderType } from '../order-type/entities/order-type.entity';
 
 @Injectable()
 export class OrderService {
@@ -59,7 +60,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.IN_WORK,
       },
-      include: [{ model: OrderStage, include: [Department, User] }],
+      include: [{ model: OrderStage, include: [Department, User] }, OrderType],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -104,7 +105,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.STOP,
       },
-      include: [OrderStage],
+      include: [OrderStage, OrderType],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -124,7 +125,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.BREAK,
       },
-      include: [OrderStage],
+      include: [OrderStage, OrderType],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -144,6 +145,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.NEW,
       },
+      include: [OrderType],
     });
   }
 
@@ -247,7 +249,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.COMPLETED,
       },
-      include: [{ model: OrderStage, include: [Department, User] }],
+      include: [{ model: OrderStage, include: [Department, User] }, OrderType],
     });
   }
 
@@ -256,7 +258,7 @@ export class OrderService {
       where: {
         id,
       },
-      include: [OrderStage],
+      include: [OrderStage, OrderType],
     });
   }
 
@@ -322,6 +324,7 @@ export class OrderService {
           [Op.not]: null,
         },
       },
+      include: [OrderType],
     });
   }
 
@@ -364,6 +367,7 @@ export class OrderService {
         enough_resources: null,
         status: OrderStatusEnum.IN_WORK,
       },
+      include: [OrderType],
     });
   }
 
@@ -372,6 +376,7 @@ export class OrderService {
       where: {
         enough_resources: true,
       },
+      include: [OrderType],
     });
   }
 
@@ -380,6 +385,7 @@ export class OrderService {
       where: {
         enough_resources: false,
       },
+      include: [OrderType],
     });
   }
 }
