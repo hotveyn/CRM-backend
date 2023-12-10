@@ -55,14 +55,14 @@ export class MonetaryMatrix extends Model<
 
   @PrimaryKey
   @AllowNull(false)
-  @ForeignKey(() => OrderType)
+  @ForeignKey(() => Department)
   @Column({
     type: DataType.BIGINT,
     field: 'department_id',
   })
   department_id: number;
 
-  @BelongsTo(() => OrderType, {
+  @BelongsTo(() => Department, {
     onDelete: 'CASCADE',
     foreignKey: 'department_id',
   })
