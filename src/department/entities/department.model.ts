@@ -10,10 +10,12 @@ import { UserDepartments } from '../../join-tables/user-departments/entities/use
 import { User } from '../../user/entities/user.model';
 import { Break } from '../../break/entities/break.model';
 import { OrderStage } from '../../order-stage/entities/order-stage.model';
+import { MonetaryMatrix } from '../../monetary-matrix/entities/monetary-matrix.entity';
 
 interface DepartmentCreationAttributes {
   name: string;
 }
+
 @Table({ tableName: 'departments' })
 export class Department extends Model<
   Department,
@@ -34,4 +36,7 @@ export class Department extends Model<
 
   @HasMany(() => OrderStage, { onDelete: 'SET NULL' })
   orderStages: OrderStage[];
+
+  @HasMany(() => MonetaryMatrix)
+  monetary_matrices: MonetaryMatrix[];
 }
