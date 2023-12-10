@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { MonetaryMatrixService } from './monetary-matrix.service';
 import { MonetaryMatrixController } from './monetary-matrix.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { OrderType } from '../order-type/entities/order-type.entity';
+import { MonetaryMatrix } from './entities/monetary-matrix.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([OrderType])],
+  imports: [SequelizeModule.forFeature([MonetaryMatrix])],
   controllers: [MonetaryMatrixController],
   providers: [MonetaryMatrixService],
 })
