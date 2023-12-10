@@ -1,6 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateMonetaryMatrixDto } from './create-monetary-matrix.dto';
+import { IsNumber, Min } from 'class-validator';
 
-export class UpdateMonetaryMatrixDto extends PartialType(
-  CreateMonetaryMatrixDto,
-) {}
+export class UpdateMonetaryMatrixDto {
+  @IsNumber()
+  @Min(0)
+  percent: number;
+}
