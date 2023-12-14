@@ -3,6 +3,7 @@ import { CreatePrefabDto } from './dto/create-prefab.dto';
 import { UpdatePrefabDto } from './dto/update-prefab.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Prefab } from './entities/prefab.entity';
+import { OrderType } from '../order-type/entities/order-type.entity';
 
 @Injectable()
 export class PrefabService {
@@ -16,11 +17,16 @@ export class PrefabService {
   }
 
   async findAll() {
-    return await this.PrefabModel.findAll();
+    return await this.PrefabModel.findAll({
+      include: [OrderType],
+    });
   }
 
   async findOne(id: number) {
-    return await this.PrefabModel.findOne({ where: { id } });
+    return await this.PrefabModel.findOne({
+      where: { id },
+      include: [OrderType],
+    });
   }
 
   async update(id: number, updatePrefabDto: UpdatePrefabDto) {

@@ -22,20 +22,17 @@ export interface IPrefab {
 }
 
 type required = Pick<IPrefab, 'price' | 'name'>;
-type optional = Partial<Pick<IPrefab, 'comment' | 'code' | 'type_id'>>;
+type optional = Partial<Pick<IPrefab, 'comment' | 'type_id'>>;
 export interface IPrefabCreationAttrs extends required, optional {}
 
 @Table({ tableName: 'prefabs' })
 export class Prefab
   extends Model<Prefab, IPrefabCreationAttrs>
-  implements IPrefab
+  implements Omit<IPrefab, 'code'>
 {
   @AllowNull(false)
   @Column
   name: string;
-
-  @Column
-  code: string | null;
 
   @Column(DataTypes.TEXT)
   comment: string | null;
@@ -56,6 +53,6 @@ export class Prefab
   })
   type_id: number | null;
 
-  @BelongsTo(() => OrderType, { onDelete: 'SET NULL' })
+  @BelongsTo(() => OrderType, { onDelete: 'CASCADE' })
   type: OrderType | null;
 }

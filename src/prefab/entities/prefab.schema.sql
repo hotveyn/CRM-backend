@@ -2,7 +2,6 @@ CREATE TABLE prefabs
 (
     id        serial primary key,
     name      varchar(255)                                         not null,
-    code      varchar(255),
     comment   varchar(255),
     price     real                                                 not null,
     type_id   bigint references order_types (id) on delete cascade not null,
