@@ -215,7 +215,7 @@ export class OrderService {
     }
 
     await order.update(updateOrderDto);
-    if (updateOrderDto.departments.length) {
+    if (updateOrderDto.departments && updateOrderDto.departments.length) {
       for (const orderStage of await this.orderStageService.findAllByOrderId(
         id,
       )) {
