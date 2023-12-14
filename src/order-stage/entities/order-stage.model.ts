@@ -53,6 +53,7 @@ export class OrderStage extends Model<OrderStage, CreationOrderStageAttrs> {
   department_id: number;
 
   @AllowNull(false)
+  @Default(0)
   @Column({
     type: DataType.REAL,
     field: 'price_percent',
