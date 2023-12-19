@@ -1,13 +1,7 @@
-import {
-  IsDefined,
-  IsNumber,
-  IsPositive,
-  ValidateNested,
-} from 'class-validator';
+import { IsDefined, IsNumber, IsPositive } from 'class-validator';
 
 export class ToWorkDto {
-  @IsDefined()
-  @ValidateNested()
+  @IsDefined({ each: true })
   departments: ToWorkDepartment[];
 }
 
@@ -17,7 +11,6 @@ class ToWorkDepartment {
   @IsPositive()
   department_id: number;
 
-  @IsDefined()
   @IsNumber({ allowNaN: false })
-  price_percent: number;
+  percent: number;
 }

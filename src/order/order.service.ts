@@ -14,12 +14,19 @@ import { ImportOrderDto } from './dto/import-order.dto';
 import { Op } from 'sequelize';
 import { User } from '../user/entities/user.model';
 import { OrderType } from '../order-type/entities/order-type.entity';
+import { MonetaryMatrix } from '../monetary-matrix/entities/monetary-matrix.entity';
+import { CreateOrderByPrefabDto } from './dto/create-order-by-prefab.dto';
+import { Prefab } from '../prefab/entities/prefab.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order)
     private readonly orderModel: typeof Order,
+    @InjectModel(MonetaryMatrix)
+    private readonly monetaryMatrixModel: typeof MonetaryMatrix,
+    @InjectModel(Prefab)
+    private readonly prefabModel: typeof Prefab,
     private readonly orderStageService: OrderStageService,
     private readonly breakService: BreakService,
     private readonly departmentService: DepartmentService,
@@ -37,6 +44,30 @@ export class OrderService {
       status: OrderStatusEnum.NEW,
       status_date: new Date().toISOString(),
       reclamation_number: createOrderDto.reclamation_number,
+    };
+    const order = await this.orderModel.create(payload);
+    order.code = String(10000 + order.id) + 'M';
+    await order.save();
+    return order;
+  }
+  async createByPrefab(createOrderByPrefabDto: CreateOrderByPrefabDto) {
+    const prefab = await this.prefabModel.findOne({
+      where: { id: createOrderByPrefabDto.prefab_id },
+    });
+
+    if (!prefab) {
+      throw new HttpException('Шаблон не найден', 404);
+    }
+
+    const payload: IOrderCreationAttrs = {
+      name: prefab.name,
+      date_start: createOrderByPrefabDto.date_start,
+      date_end: createOrderByPrefabDto.date_end,
+      comment: prefab.comment,
+      type_id: prefab.type_id,
+      price: prefab.price,
+      status: OrderStatusEnum.NEW,
+      status_date: new Date().toISOString(),
     };
     const order = await this.orderModel.create(payload);
     order.code = String(10000 + order.id) + 'M';
@@ -170,10 +201,21 @@ export class OrderService {
     const orderStages: OrderStage[] = [];
 
     for (let i = 0; i < inWorkDto.departments.length; i++) {
+      let defaultPercent = 0;
+      if (!inWorkDto.departments[i].percent) {
+        const matrix = await this.monetaryMatrixModel.findOne({
+          where: {
+            department_id: inWorkDto.departments[i].department_id,
+            order_type_id: order.type_id,
+          },
+        });
+        defaultPercent = matrix.percent;
+      }
+
       const orderStage = await this.orderStageService.create({
         order_id: id,
         department_id: inWorkDto.departments[i].department_id,
-        price_percent: inWorkDto.departments[i].price_percent,
+        percent: inWorkDto.departments[i].percent || defaultPercent || 0,
         in_order: i + 1,
       });
 
@@ -226,7 +268,7 @@ export class OrderService {
         const orderStage = await this.orderStageService.create({
           order_id: id,
           department_id: updateOrderDto.departments[i].department_id,
-          price_percent: updateOrderDto.departments[i].price_percent,
+          percent: updateOrderDto.departments[i].percent,
           in_order: i + 1,
         });
 

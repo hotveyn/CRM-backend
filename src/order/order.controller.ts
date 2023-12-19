@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IRequestJWT } from '../auth/interfaces/IRequestJWT';
 import { Roles } from '../auth/roles.decorator';
 import { UserRoleEnum } from '../user/types/user-role.enum';
+import { CreateOrderByPrefabDto } from './dto/create-order-by-prefab.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order')
@@ -28,6 +29,11 @@ export class OrderController {
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.orderService.create(createOrderDto);
+  }
+
+  @Post('by-prefab')
+  createByPrefab(@Body() createOrderByPrefabDto: CreateOrderByPrefabDto) {
+    return this.orderService.createByPrefab(createOrderByPrefabDto);
   }
 
   @Patch('/:id/set-rating')

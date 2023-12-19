@@ -35,5 +35,5 @@ class ToWorkDepartment {
 
   @IsDefined()
   @IsNumber({ allowNaN: false })
-  price_percent: number;
+  percent: number;
 }
