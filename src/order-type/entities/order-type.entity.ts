@@ -1,4 +1,5 @@
 import {
+  AfterCreate,
   AllowNull,
   Column,
   DataType,
@@ -7,6 +8,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Order } from '../../order/entities/order.model';
+import { MonetaryMatrix } from '../../monetary-matrix/entities/monetary-matrix.entity';
+import { Department } from '../../department/entities/department.model';
 
 interface IOrderType {
   name: string;
@@ -30,4 +33,17 @@ export class OrderType
 
   @HasMany(() => Order, { onDelete: 'SET NULL' })
   orders: Order[];
+
+  @AfterCreate
+  static async addMatrixAfterCreate(instance: OrderType) {
+    const departments = await Department.findAll();
+    await Promise.all(
+      departments.map(async (d) => {
+        return MonetaryMatrix.create({
+          order_type_id: instance.id,
+          department_id: d.id,
+        });
+      }),
+    );
+  }
 }
