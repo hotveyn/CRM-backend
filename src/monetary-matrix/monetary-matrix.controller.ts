@@ -12,6 +12,7 @@ import {
 import { MonetaryMatrixService } from './monetary-matrix.service';
 import { CreateMonetaryMatrixDto } from './dto/create-monetary-matrix.dto';
 import { UpdateMonetaryMatrixDto } from './dto/update-monetary-matrix.dto';
+import { BulkUpdateMonetaryMatrixDto } from './dto/bulk-update-monetary-matrix.dto';
 
 @Controller('monetary-matrix')
 export class MonetaryMatrixController {
@@ -25,6 +26,11 @@ export class MonetaryMatrixController {
   @Get()
   findAll() {
     return this.monetaryMatrixService.findAll();
+  }
+
+  @Get('ser-to-table')
+  findSerializedToTable() {
+    return this.monetaryMatrixService.findSerializedToTable();
   }
 
   @Get('one')
@@ -46,6 +52,11 @@ export class MonetaryMatrixController {
       department_id,
       updateMonetaryMatrixDto,
     );
+  }
+
+  @Patch('bulk-update')
+  bulkUpdate(@Body() bulkUpdateMonetaryMatrixDto: BulkUpdateMonetaryMatrixDto) {
+    return this.monetaryMatrixService.bulkUpdate(bulkUpdateMonetaryMatrixDto);
   }
 
   @Delete(':id')

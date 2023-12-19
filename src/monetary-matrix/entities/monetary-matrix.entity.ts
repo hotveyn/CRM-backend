@@ -3,6 +3,7 @@ import {
   BelongsTo,
   Column,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -31,6 +32,7 @@ export class MonetaryMatrix extends Model<
   MonetaryMatrix,
   IMonetaryMatrixCreationAttrs
 > {
+  @Default(0)
   @AllowNull(false)
   @Column({
     field: 'percent',
