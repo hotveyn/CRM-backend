@@ -8,10 +8,12 @@ import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { BreakModule } from '../break/break.module';
 import { DepartmentModule } from '../department/department.module';
+import { MonetaryMatrix } from '../monetary-matrix/entities/monetary-matrix.entity';
+import { Prefab } from '../prefab/entities/prefab.entity';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Order]),
+    SequelizeModule.forFeature([Order, MonetaryMatrix, Prefab]),
     OrderStageModule,
     DepartmentModule,
     UserModule,

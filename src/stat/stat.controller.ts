@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { StatService } from './stat.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IRequestJWT } from '../auth/interfaces/IRequestJWT';
@@ -33,6 +25,15 @@ export class StatController {
     @Query('end') endDate: string,
   ) {
     return this.statService.getEmployeesStat(startDate, endDate);
+  }
+
+  @Roles(UserRoleEnum.ADMIN)
+  @Get('payment')
+  getPaymentStat(
+    @Query('start') startDate: string,
+    @Query('end') endDate: string,
+  ) {
+    return this.statService.getPaymentStat(startDate, endDate);
   }
 
   @Roles(UserRoleEnum.ADMIN)

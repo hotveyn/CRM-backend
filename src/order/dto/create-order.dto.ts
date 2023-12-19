@@ -1,17 +1,19 @@
-import {
-  IsDefined,
-  IsEnum,
-  IsString,
-  IsNumber,
-  IsDateString,
-  IsPositive,
-  IsBoolean,
-} from 'class-validator';
-import { OrderTypeEnum } from '../types/order-type.enum';
+import { IsDefined, IsString, IsNumber, IsDateString } from 'class-validator';
 import { IOrderCreationAttrs } from '../entities/order.model';
 
 export class CreateOrderDto
-  implements Omit<IOrderCreationAttrs, 'status' | 'code' | 'status_date'>
+  implements
+    Pick<
+      IOrderCreationAttrs,
+      | 'name'
+      | 'date_start'
+      | 'date_end'
+      | 'comment'
+      | 'price'
+      | 'neon_length'
+      | 'type_id'
+      | 'reclamation_number'
+    >
 {
   @IsDefined()
   @IsString()
@@ -30,11 +32,14 @@ export class CreateOrderDto
 
   @IsDefined()
   @IsNumber()
+  price: number;
+
+  @IsNumber()
   neon_length: number;
 
   @IsDefined()
-  @IsEnum(OrderTypeEnum)
-  type: OrderTypeEnum;
+  @IsNumber()
+  type_id: number;
 
   @IsString()
   reclamation_number: string;

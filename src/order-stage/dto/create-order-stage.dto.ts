@@ -11,6 +11,10 @@ export class CreateOrderStageDto {
 
   @IsNumber()
   @IsDefined()
+  percent: number;
+
+  @IsNumber()
+  @IsDefined()
   in_order: number;
 
   @IsNumber()

@@ -11,7 +11,6 @@ import { HashService } from '../utils/hash.service';
 import { Department } from '../department/entities/department.model';
 import { UserRoleEnum } from './types/user-role.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { OrderStage } from '../order-stage/entities/order-stage.model';
 import { Op } from 'sequelize';
 
 @Injectable()
@@ -70,7 +69,11 @@ export class UserService {
   async findAllNormal(): Promise<User[] | null> {
     return this.userModel.findAll({
       where: {
-        [Op.or]: [{ role: 'employee' }, { role: 'manager' }],
+        [Op.or]: [
+          { role: UserRoleEnum.EMPLOYEE },
+          { role: UserRoleEnum.MANAGER },
+          { role: UserRoleEnum.STORAGE },
+        ],
       },
       include: [Department],
     });

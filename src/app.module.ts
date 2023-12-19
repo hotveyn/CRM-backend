@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
@@ -11,12 +12,15 @@ import { OrderModule } from './order/order.module';
 import { OrderStageModule } from './order-stage/order-stage.module';
 import { BitrixModule } from './bitrix/bitrix.module';
 import { StatModule } from './stat/stat.module';
-import 'dotenv/config'
+import { OrderTypeModule } from './order-type/order-type.module';
+import { PrefabModule } from './prefab/prefab.module';
+import { MonetaryMatrixModule } from './monetary-matrix/monetary-matrix.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
+      isGlobal: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -26,6 +30,7 @@ import 'dotenv/config'
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadModels: true,
+      synchronize: false,
     }),
     UserModule,
     AuthModule,
@@ -37,6 +42,9 @@ import 'dotenv/config'
     OrderStageModule,
     BitrixModule,
     StatModule,
+    OrderTypeModule,
+    PrefabModule,
+    MonetaryMatrixModule,
   ],
   controllers: [],
   providers: [],

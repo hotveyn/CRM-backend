@@ -182,6 +182,72 @@ export class StatService {
     return { orders };
   }
 
+  async getPaymentStat(
+    startDate = '2004-07-13T22:02:32.395Z',
+    endDate = '2077-11-05T22:02:32.395Z',
+  ) {
+    const users = await this.userModel.findAll({
+      where: {
+        role: UserRoleEnum.EMPLOYEE,
+      },
+      include: [
+        {
+          model: OrderStage,
+          attributes: ['percent'],
+          include: [
+            Department,
+            {
+              model: Order,
+              where: {
+                status: OrderStatusEnum.COMPLETED,
+                status_date: {
+                  [Op.between]: [startDate, endDate],
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const departments = await this.departmentModel.findAll();
+
+    const row = { employee_name: '', sum: 0 };
+    const total = { employee_name: 'Итого', sum: 0 };
+
+    departments.forEach((department) => {
+      row[department.id] = { ...department.dataValues, sum: 0 };
+      total[department.id] = { ...department.dataValues, sum: 0 };
+    });
+
+    const result = [];
+
+    users.forEach((user) => {
+      const userRow = JSON.parse(JSON.stringify(row));
+      userRow.employee_name = `${user.last_name} ${user.first_name} ${user.patronymic_name}`;
+
+      user.orderStages.forEach((orderStage) => {
+        if (orderStage.department && orderStage.department.id) {
+          const money = Math.floor(
+            orderStage.order.price * (orderStage.percent / 100),
+          );
+
+          userRow[orderStage.department.id].sum += money;
+          userRow.sum += money;
+
+          total[orderStage.department.id].sum += money;
+          total.sum += money;
+        }
+      });
+
+      result.push(userRow);
+    });
+
+    result.push(total);
+
+    return result;
+  }
+
   async getEmployeesStat(
     startDate = '2004-07-13T22:02:32.395Z',
     endDate = '2077-11-05T22:02:32.395Z',

@@ -1,21 +1,39 @@
-import { IsEnum, IsNumber, IsPositive, IsString } from 'class-validator';
-import { OrderTypeEnum } from '../types/order-type.enum';
+import {
+  IsDefined,
+  IsNumber,
+  IsPositive,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class UpdateOrderDto {
   @IsString()
   name?: string;
 
-  @IsEnum(OrderTypeEnum)
-  type?: OrderTypeEnum;
+  @IsNumber()
+  type_id?: number;
 
   @IsNumber()
   @IsPositive()
-  neon_length: number;
+  neon_length?: number;
 
-  @IsNumber({ allowNaN: false }, { each: true })
-  @IsPositive({ each: true })
-  departments: number[];
+  @IsNumber()
+  price?: number;
+
+  @ValidateNested()
+  departments?: ToWorkDepartment[];
 
   @IsString()
-  comment: string;
+  comment?: string;
+}
+
+class ToWorkDepartment {
+  @IsDefined()
+  @IsNumber({ allowNaN: false })
+  @IsPositive()
+  department_id: number;
+
+  @IsDefined()
+  @IsNumber({ allowNaN: false })
+  percent: number;
 }

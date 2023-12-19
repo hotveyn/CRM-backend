@@ -5,7 +5,6 @@ import { User } from '../user/entities/user.model';
 import { HashService } from '../utils/hash.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
-import { UserRoleEnum } from '../user/types/user-role.enum';
 
 @Injectable()
 export class AuthService {

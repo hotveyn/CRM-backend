@@ -13,12 +13,20 @@ import { Department } from '../department/entities/department.model';
 import { ImportOrderDto } from './dto/import-order.dto';
 import { Op } from 'sequelize';
 import { User } from '../user/entities/user.model';
+import { OrderType } from '../order-type/entities/order-type.entity';
+import { MonetaryMatrix } from '../monetary-matrix/entities/monetary-matrix.entity';
+import { CreateOrderByPrefabDto } from './dto/create-order-by-prefab.dto';
+import { Prefab } from '../prefab/entities/prefab.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order)
     private readonly orderModel: typeof Order,
+    @InjectModel(MonetaryMatrix)
+    private readonly monetaryMatrixModel: typeof MonetaryMatrix,
+    @InjectModel(Prefab)
+    private readonly prefabModel: typeof Prefab,
     private readonly orderStageService: OrderStageService,
     private readonly breakService: BreakService,
     private readonly departmentService: DepartmentService,
@@ -31,10 +39,35 @@ export class OrderService {
       date_end: createOrderDto.date_end,
       comment: createOrderDto.comment,
       neon_length: createOrderDto.neon_length,
-      type: createOrderDto.type,
+      type_id: createOrderDto.type_id,
+      price: createOrderDto.price,
       status: OrderStatusEnum.NEW,
       status_date: new Date().toISOString(),
       reclamation_number: createOrderDto.reclamation_number,
+    };
+    const order = await this.orderModel.create(payload);
+    order.code = String(10000 + order.id) + 'M';
+    await order.save();
+    return order;
+  }
+  async createByPrefab(createOrderByPrefabDto: CreateOrderByPrefabDto) {
+    const prefab = await this.prefabModel.findOne({
+      where: { id: createOrderByPrefabDto.prefab_id },
+    });
+
+    if (!prefab) {
+      throw new HttpException('Шаблон не найден', 404);
+    }
+
+    const payload: IOrderCreationAttrs = {
+      name: prefab.name,
+      date_start: createOrderByPrefabDto.date_start,
+      date_end: createOrderByPrefabDto.date_end,
+      comment: prefab.comment,
+      type_id: prefab.type_id,
+      price: prefab.price,
+      status: OrderStatusEnum.NEW,
+      status_date: new Date().toISOString(),
     };
     const order = await this.orderModel.create(payload);
     order.code = String(10000 + order.id) + 'M';
@@ -58,7 +91,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.IN_WORK,
       },
-      include: [{ model: OrderStage, include: [Department, User] }],
+      include: [{ model: OrderStage, include: [Department, User] }, OrderType],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -103,7 +136,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.STOP,
       },
-      include: [OrderStage],
+      include: [OrderStage, OrderType],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -123,7 +156,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.BREAK,
       },
-      include: [OrderStage],
+      include: [OrderStage, OrderType],
     });
     const formattedOrders = [];
     for (const order of orders) {
@@ -143,6 +176,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.NEW,
       },
+      include: [OrderType],
     });
   }
 
@@ -152,9 +186,11 @@ export class OrderService {
         id,
       },
     });
+
     if (!order) {
       throw new HttpException('Этот заказ не существует', 400);
     }
+
     if (order.status !== OrderStatusEnum.NEW) {
       throw new HttpException('Заказ уже не новый', 400);
     }
@@ -164,19 +200,48 @@ export class OrderService {
     await order.save();
     const orderStages: OrderStage[] = [];
 
-    for (const department_id of inWorkDto.departments) {
-      const index: number = inWorkDto.departments.indexOf(department_id);
+    for (let i = 0; i < inWorkDto.departments.length; i++) {
+      let defaultPercent = 0;
+      if (!inWorkDto.departments[i].percent) {
+        const matrix = await this.monetaryMatrixModel.findOne({
+          where: {
+            department_id: inWorkDto.departments[i].department_id,
+            order_type_id: order.type_id,
+          },
+        });
+        defaultPercent = matrix.percent;
+      }
+
       const orderStage = await this.orderStageService.create({
         order_id: id,
-        department_id: department_id,
-        in_order: index + 1,
+        department_id: inWorkDto.departments[i].department_id,
+        percent: inWorkDto.departments[i].percent || defaultPercent || 0,
+        in_order: i + 1,
       });
-      if (index + 1 === 1) {
+
+      // Если стадия первая то сделать её активной
+      if (i === 0) {
         orderStage.is_active = true;
         await orderStage.save();
       }
+
       orderStages.push(orderStage);
     }
+    // for (const toWorkDepartment of inWorkDto.departments) {
+    //   const index: number = inWorkDto.departments.indexOf(
+    //     toWorkDepartment.department_id,
+    //   );
+    //   const orderStage = await this.orderStageService.create({
+    //     order_id: id,
+    //     department_id: toWorkDepartment.department_id,
+    //     in_order: index + 1,
+    //   });
+    //   if (index + 1 === 1) {
+    //     orderStage.is_active = true;
+    //     await orderStage.save();
+    //   }
+    //   orderStages.push(orderStage);
+    // }
 
     return { ...order.dataValues, stages: orderStages };
   }
@@ -192,21 +257,23 @@ export class OrderService {
     }
 
     await order.update(updateOrderDto);
-    if (updateOrderDto.departments) {
+    if (updateOrderDto.departments && updateOrderDto.departments.length) {
       for (const orderStage of await this.orderStageService.findAllByOrderId(
         id,
       )) {
         await orderStage.destroy();
       }
 
-      for (const department_id of updateOrderDto.departments) {
-        const index: number = updateOrderDto.departments.indexOf(department_id);
+      for (let i = 0; i < updateOrderDto.departments.length; i++) {
         const orderStage = await this.orderStageService.create({
           order_id: id,
-          department_id: department_id,
-          in_order: index + 1,
+          department_id: updateOrderDto.departments[i].department_id,
+          percent: updateOrderDto.departments[i].percent,
+          in_order: i + 1,
         });
-        if (index + 1 === 1) {
+
+        // Если стадия первая то сделать её активной
+        if (i === 0) {
           orderStage.is_active = true;
           await orderStage.save();
         }
@@ -224,7 +291,7 @@ export class OrderService {
       where: {
         status: OrderStatusEnum.COMPLETED,
       },
-      include: [{ model: OrderStage, include: [Department, User] }],
+      include: [{ model: OrderStage, include: [Department, User] }, OrderType],
     });
   }
 
@@ -233,7 +300,7 @@ export class OrderService {
       where: {
         id,
       },
-      include: [OrderStage],
+      include: [OrderStage, OrderType],
     });
   }
 
@@ -299,6 +366,7 @@ export class OrderService {
           [Op.not]: null,
         },
       },
+      include: [OrderType],
     });
   }
 
@@ -341,6 +409,7 @@ export class OrderService {
         enough_resources: null,
         status: OrderStatusEnum.IN_WORK,
       },
+      include: [OrderType],
     });
   }
 
@@ -349,6 +418,7 @@ export class OrderService {
       where: {
         enough_resources: true,
       },
+      include: [OrderType],
     });
   }
 
@@ -357,6 +427,7 @@ export class OrderService {
       where: {
         enough_resources: false,
       },
+      include: [OrderType],
     });
   }
 }

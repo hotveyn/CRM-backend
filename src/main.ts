@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
+import 'dotenv/config';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
@@ -13,4 +14,5 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ skipMissingProperties: true }));
   await app.listen(PORT);
 }
+
 bootstrap();
