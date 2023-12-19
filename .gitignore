@@ -3,7 +3,7 @@
 /node_modules
 
 # ENV
-.env
+.env.development
 .env.dev
 .env.development
 .env.prod
