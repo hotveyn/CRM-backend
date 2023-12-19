@@ -28,6 +28,15 @@ export class StatController {
   }
 
   @Roles(UserRoleEnum.ADMIN)
+  @Get('payment')
+  getPaymentStat(
+    @Query('start') startDate: string,
+    @Query('end') endDate: string,
+  ) {
+    return this.statService.getPaymentStat(startDate, endDate);
+  }
+
+  @Roles(UserRoleEnum.ADMIN)
   @Get('orders/stopped')
   getOrdersStoppedStat(
     @Query('start') startDate: string,
