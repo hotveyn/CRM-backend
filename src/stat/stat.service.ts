@@ -26,7 +26,7 @@ export class StatService {
     startDate = '2004-07-13T22:02:32.395Z',
     endDate = '2077-11-05T22:02:32.395Z',
   ) {
-    const user: User = await this.userModel.findByPk(id, {
+    const users: User[] = await this.userModel.findAll({
       include: [
         {
           model: OrderStage,
@@ -36,31 +36,36 @@ export class StatService {
               [Op.between]: [startDate, endDate],
             },
           },
-          include: [Order, Department],
+          include: [
+            {
+              model: Order,
+              where: {
+                status: OrderStatusEnum.COMPLETED,
+              },
+            },
+          ],
         },
       ],
     });
-    const counts = new Map();
-    if (user) {
-      user.orderStages.forEach((stage) => {
-        if (stage.department) {
-          if (!(stage.department.name in counts)) {
-            counts[stage.department.name] = {
-              stages: 0,
-              break_stages: 0,
-              neon_length: 0,
-            };
-          }
-          counts[stage.department.name].stages += 1;
-          counts[stage.department.name].neon_length += stage.order.neon_length;
-          counts[stage.department.name].neon_length =
-            +counts[stage.department.name].neon_length.toFixed(1);
-          if (stage.break_id) counts[stage.department.name].break_stages += 1;
-        }
-      });
-    }
+    const result = [];
 
-    return counts;
+    users.forEach((user) => {
+      const serUser = {
+        id: user.id,
+        name: `${user.last_name} ${user.first_name} ${user.patronymic_name}`,
+        stages: 0,
+        money: 0,
+      };
+
+      user.orderStages.forEach((orderStage) => {
+        serUser.stages += 1;
+        serUser.money += orderStage.order.price * (orderStage.percent / 100);
+      });
+      serUser.money = Math.floor(serUser.money);
+      result.push(serUser);
+    });
+
+    return result;
   }
 
   async getDepartmentsStat(
