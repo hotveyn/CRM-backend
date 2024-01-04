@@ -29,13 +29,22 @@ export class OrderStageController {
     return this.orderStageService.findWorkForUser(req.user.id);
   }
 
-  // @Roles(UserRoleEnum.EMPLOYEE)
+  @Roles(UserRoleEnum.EMPLOYEE)
   @Patch(':id/claim')
   claimStageWithUser(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: IRequestJWT,
   ) {
     return this.orderStageService.claimStageWithUser(id, req.user.id);
+  }
+
+  @Roles(UserRoleEnum.EMPLOYEE)
+  @Patch(':id/unclaim')
+  unclaimStageWithUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: IRequestJWT,
+  ) {
+    return this.orderStageService.unclaimStageWithUser(id, req.user.id);
   }
 
   @Roles(UserRoleEnum.EMPLOYEE)

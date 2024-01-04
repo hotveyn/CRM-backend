@@ -120,6 +120,23 @@ export class OrderStageService {
     return orderStage;
   }
 
+  async unclaimStageWithUser(stage_id: number, user_id: number) {
+    const orderStage = await this.orderStageModel.findOne({
+      where: { id: stage_id, is_active: true, user_id },
+    });
+
+    if (!orderStage) {
+      throw new HttpException(
+        'Такой активной стадии заказа не существует',
+        400,
+      );
+    }
+
+    orderStage.user_id = null;
+    await orderStage.save();
+    return orderStage;
+  }
+
   async ready(stage_id: number, user_id: number) {
     const orderStage = await this.orderStageModel.findOne({
       where: {
@@ -146,18 +163,20 @@ export class OrderStageService {
 
     if (!nextOrderStage) {
       orderStage.is_active = false;
-      await orderStage.save();
+      orderStage.ready_date = new Date().toISOString();
       orderStage.order.status = OrderStatusEnum.COMPLETED;
-      await orderStage.order.save();
+      await Promise.all([
+        await orderStage.save(),
+        await orderStage.order.save(),
+      ]);
       return orderStage;
     }
 
     nextOrderStage.is_active = true;
     orderStage.is_active = false;
     orderStage.ready_date = new Date().toISOString();
-    console.log(orderStage.ready_date);
-    await nextOrderStage.save();
-    await orderStage.save();
+
+    await Promise.all([orderStage.save(), nextOrderStage.save()]);
     return [orderStage, nextOrderStage];
   }
 
