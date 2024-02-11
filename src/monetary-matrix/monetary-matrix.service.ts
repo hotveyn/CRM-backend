@@ -44,6 +44,7 @@ export class MonetaryMatrixService {
         serData.sum += j.percent;
       });
 
+      serData.sum = Number(serData.sum.toFixed(2));
       return serData;
     });
     return res;
