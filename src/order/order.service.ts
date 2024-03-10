@@ -430,4 +430,15 @@ export class OrderService {
       include: [OrderType],
     });
   }
+
+  async setStatusHidden(id: number) {
+    return await this.orderModel.update(
+      { status: OrderStatusEnum.HIDDEN },
+      {
+        where: {
+          id,
+        },
+      },
+    );
+  }
 }

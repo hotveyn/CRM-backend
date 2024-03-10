@@ -4,4 +4,5 @@ export enum OrderStatusEnum {
   BREAK = 'Брак',
   COMPLETED = 'Готов',
   STOP = 'Приостановлен',
+  HIDDEN = 'Скрыт',
 }

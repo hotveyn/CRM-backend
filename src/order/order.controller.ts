@@ -140,6 +140,7 @@ export class OrderController {
   ) {
     return this.orderService.setResourcesNotEnough(id, req.user.id);
   }
+
   @Roles(UserRoleEnum.STORAGE)
   @Patch('/:id/resources/null')
   setResourcesNull(
@@ -147,6 +148,11 @@ export class OrderController {
     @Req() req: IRequestJWT,
   ) {
     return this.orderService.setResourcesNull(id, req.user.id);
+  }
+
+  @Patch('/hide/:id')
+  setStatusHidden(@Param('id', ParseIntPipe) id: number) {
+    return this.orderService.setStatusHidden(id);
   }
 
   @Delete(':id')

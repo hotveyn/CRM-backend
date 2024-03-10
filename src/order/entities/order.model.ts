@@ -58,7 +58,16 @@ export class Order extends Model<Order, IOrderCreationAttrs> {
 
   @AllowNull(false)
   @Default(OrderStatusEnum.NEW)
-  @Column(DataTypes.ENUM('Новый', 'В работе', 'Брак', 'Готов', 'Приостановлен'))
+  @Column(
+    DataTypes.ENUM(
+      'Новый',
+      'В работе',
+      'Брак',
+      'Готов',
+      'Приостановлен',
+      'Скрыт',
+    ),
+  )
   status: OrderStatusEnum;
 
   @Column
