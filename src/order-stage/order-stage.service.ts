@@ -69,7 +69,9 @@ export class OrderStageService {
                 user_id: null,
                 break_id: null,
               },
-              include: [Order],
+              include: [
+                { model: Order, where: { status: OrderStatusEnum.IN_WORK } },
+              ],
             },
           ],
         },
