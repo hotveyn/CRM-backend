@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BitrixImportDto } from './dto/bitrix-import.dto';
 import { IBitrixResponse } from './types/IBitrixResponse';
 import { OrderService } from '../order/order.service';
@@ -6,13 +6,16 @@ import { ImportOrderDto } from '../order/dto/import-order.dto';
 
 @Injectable()
 export class BitrixService {
+  private readonly logger = new Logger(BitrixService.name);
   constructor(readonly orderService: OrderService) {}
+
   async import(dto: BitrixImportDto) {
     const res = await fetch(
       `https://neonbro.bitrix24.ru/rest/21686/l53sdllzqx9tebg4/crm.deal.get.json?id=${
         dto.document_id[2].split('_')[1]
       }`,
     );
+
     const data: IBitrixResponse = await res.json();
 
     if (+data.result.UF_CRM_1656491267678 < 2) {
@@ -27,6 +30,8 @@ export class BitrixService {
         data.result.CLOSEDATE.slice(0, 10),
         data.result.ID,
       );
+
+      this.logger.log(dto);
       await this.orderService.import(dto);
       return;
     }
@@ -42,6 +47,8 @@ export class BitrixService {
         data.result.CLOSEDATE.slice(0, 10),
         String(`${data.result.ID}(${i})`),
       );
+
+      this.logger.log(dto);
       await this.orderService.import(dto);
     }
   }

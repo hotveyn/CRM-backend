@@ -31,6 +31,7 @@ import { MonetaryMatrixModule } from './monetary-matrix/monetary-matrix.module';
       database: process.env.DB_NAME,
       autoLoadModels: true,
       synchronize: false,
+      logging: false,
     }),
     UserModule,
     AuthModule,
