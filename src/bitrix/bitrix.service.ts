@@ -31,7 +31,7 @@ export class BitrixService {
         data.result.ID,
       );
 
-      this.logger.log(dto);
+      this.logger.log(JSON.stringify(dto, null, 4));
       await this.orderService.import(dto);
       return;
     }
@@ -48,7 +48,7 @@ export class BitrixService {
         String(`${data.result.ID}(${i})`),
       );
 
-      this.logger.log(dto);
+      this.logger.log(JSON.stringify(dto, null, 4));
       await this.orderService.import(dto);
     }
   }
