@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model Break {
+  id           Int          @id @default(autoincrement())
+  name         String       @db.VarChar(255)
+  departmentId Int?         @map("department_id")
+  createdAt    DateTime     @db.Timestamptz(0)
+  updatedAt    DateTime     @db.Timestamptz(0)
+  department  Department?  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  orderStages  OrderStage[]
+
+  @@map("breaks")
+}
+
+model Department {
+  id               Int              @id @default(autoincrement())
+  name             String           @db.VarChar(255)
+  createdAt        DateTime         @db.Timestamptz(0)
+  updatedAt        DateTime         @db.Timestamptz(0)
+  breaks           Break[]
+  monetaryMatrices MonetaryMatrix[]
+  orderStages      OrderStage[]
+  userDepartments  UserDepartment[]
+
+  @@map("departments")
+}
+
+model MonetaryMatrix {
+  percent      Float      @default(0) @db.Real
+  orderTypeId  Int        @map("order_type_id")
+  departmentId Int        @map("department_id")
+  createdAt    DateTime   @db.Timestamptz(0)
+  updatedAt    DateTime   @db.Timestamptz(0)
+  department  Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  orderType   OrderType  @relation(fields: [orderTypeId], references: [id], onDelete: Cascade)
+
+  @@id([orderTypeId, departmentId])
+  @@map("monetary_matrices")
+}
+
+model OrderStage {
+  id           Int         @id @default(autoincrement())
+  userId       Int?        @map("user_id")
+  orderId      Int         @map("order_id")
+  departmentId Int?        @map("department_id")
+  breakId      Int?        @map("break_id")
+  isActive     Boolean?    @default(false) @map("is_active")
+  inOrder      Int         @map("in_order")
+  createdAt    DateTime    @db.Timestamptz(0)
+  updatedAt    DateTime    @db.Timestamptz(0)
+  readyDate    DateTime?   @map("ready_date") @db.Timestamptz(0)
+  percent      Float       @default(0) @db.Real
+  break       Break?      @relation(fields: [breakId], references: [id], onDelete: Cascade)
+  department  Department? @relation(fields: [departmentId], references: [id])
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user        User?       @relation(fields: [userId], references: [id])
+
+  @@map("order_stages")
+}
+
+model OrderType {
+  id               Int              @id @default(autoincrement())
+  name             String           @db.VarChar(255)
+  createdAt        DateTime         @db.Timestamptz(0)
+  updatedAt        DateTime         @db.Timestamptz(0)
+  monetaryMatrices MonetaryMatrix[]
+  orders           Order[]
+  prefabs          Prefab[]
+
+  @@map("order_types")
+}
+
+model Order {
+  id                Int             @id @default(autoincrement())
+  name              String?         @db.VarChar(255)
+  dateStart         DateTime        @map("date_start") @db.Date
+  dateEnd           DateTime        @db.Date
+  comment           String?
+  neonLength        Float           @default(0) @db.Real
+  status            EnumOrderStatus @default(dbgenerated("Новый"))
+  code              String?         @db.VarChar(255)
+  rating            Int?            @default(0)
+  reclamationNumber String?         @map("reclamation_number") @db.VarChar(255)
+  createdAt         DateTime        @db.Timestamptz(0)
+  updatedAt         DateTime        @db.Timestamptz(0)
+  statusDate        DateTime?       @map("status_date") @db.Timestamptz(0)
+  managerId         Int?            @map("manager_id")
+  storageId         Int?            @map("storage_id")
+  enoughResources   Boolean?        @map("enough_resources")
+  price             Float           @default(0) @db.Real
+  typeId            Int?            @map("type_id")
+  orderStages       OrderStage[]
+  manager           User?           @relation("manager", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_manager")
+  storager          User?           @relation("storager", fields: [storageId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_storage")
+  orderType         OrderType?      @relation(fields: [typeId], references: [id], map: "order_type_id_fk")
+
+  @@map("orders")
+}
+
+model Prefab {
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(255)
+  comment   String?
+  price     Float      @default(0) @db.Real
+  typeId    Int?       @map("type_id")
+  createdAt DateTime   @db.Timestamptz(0)
+  updatedAt DateTime   @db.Timestamptz(0)
+  orderType OrderType? @relation(fields: [typeId], references: [id], onDelete: Cascade)
+
+  @@map("prefabs")
+}
+
+model UserDepartment {
+  userId       Int        @map("user_id")
+  departmentId Int        @map("department_id")
+  createdAt    DateTime   @db.Timestamptz(0)
+  updatedAt    DateTime   @db.Timestamptz(0)
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, departmentId])
+  @@map("user_departments")
+}
+
+model User {
+  id              Int              @id @default(autoincrement())
+  login           String           @unique @db.VarChar(255)
+  password        String           @db.VarChar(255)
+  firstName       String           @db.VarChar(255)
+  code            String?          @unique @db.VarChar(255)
+  lastName        String           @map("last_name") @db.VarChar(255)
+  patronymicName  String           @map("patronymic_name") @db.VarChar(255)
+  role            EnumUserRole
+  startWorkDate   DateTime?        @map("start_work_date") @db.Date
+  createdAt       DateTime?        @db.Timestamptz(0)
+  updatedAt       DateTime         @db.Timestamptz(0)
+  orderStages     OrderStage[]
+  managedOrders   Order[]          @relation("manager")
+  storagedOrders  Order[]          @relation("storager")
+  userDepartments UserDepartment[]
+
+  @@map("users")
+}
+
+enum EnumOrderStatus {
+  NEW         @map("Новый")
+  IN_PROGRESS @map("В работе")
+  BREAK       @map("Брак")
+  READY       @map("Готов")
+  STOPED      @map("Приостановлен")
+  HIDDEN      @map("Скрыт")
+
+  @@map("enum_orders_status")
+}
+
+enum EnumOrderType {
+  NEON_2        @map("НЕОН 2")
+  NEON_2_STREET @map("НЕОН 2 улица")
+  NEON_SMART    @map("СМАРТ неон")
+  NEON_1        @map("НЕОН 1")
+
+  @@map("enum_orders_type")
+}
+
+enum EnumUserRole {
+  ADMIN    @map("admin")
+  MANAGER  @map("manager")
+  EMPLOYEE @map("employee")
+  FIRED    @map("fired")
+  STORAGE  @map("storage")
+
+  @@map("enum_users_role")
+}

@@ -19,7 +19,6 @@ import { MonetaryMatrixModule } from './monetary-matrix/monetary-matrix.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true,
     }),
     SequelizeModule.forRoot({
