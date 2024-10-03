@@ -195,18 +195,13 @@ export class StatService {
       include: [
         {
           model: OrderStage,
-          attributes: ['percent'],
-          include: [
-            Department,
-            {
-              model: Order,
-              where: {
-                status_date: {
-                  [Op.between]: [startDate, endDate],
-                },
-              },
+          where: {
+            ready_date: {
+              [Op.between]: [startDate, endDate],
             },
-          ],
+          },
+          attributes: ['percent'],
+          include: [Department, Order],
         },
       ],
     });
