@@ -201,7 +201,6 @@ export class StatService {
             {
               model: Order,
               where: {
-                status: OrderStatusEnum.COMPLETED,
                 status_date: {
                   [Op.between]: [startDate, endDate],
                 },
