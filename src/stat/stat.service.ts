@@ -39,9 +39,6 @@ export class StatService {
           include: [
             {
               model: Order,
-              where: {
-                status: OrderStatusEnum.COMPLETED,
-              },
             },
           ],
         },
