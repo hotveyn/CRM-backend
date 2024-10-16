@@ -31,7 +31,6 @@ export class StatService {
         {
           model: OrderStage,
           where: {
-            is_active: false,
             ready_date: {
               [Op.between]: [startDate, endDate],
             },
