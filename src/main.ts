@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import 'dotenv/config';
 
 async function bootstrap() {
@@ -10,6 +10,10 @@ async function bootstrap() {
     cors: {
       origin: '*',
     },
+  });
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
   });
   app.useGlobalPipes(new ValidationPipe({ skipMissingProperties: true }));
   await app.listen(PORT);

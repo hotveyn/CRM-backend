@@ -14,11 +14,15 @@ import { IRequestJWT } from '../auth/interfaces/IRequestJWT';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OrderStageService } from './order-stage.service';
 import { BreakOrderStageDto } from './dto/break-order-stage.dto';
+import { GetOrderStageDepartmentProcedure } from './procedures/get-order-stage-department';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order-stage')
 export class OrderStageController {
-  constructor(private readonly orderStageService: OrderStageService) {}
+  constructor(
+    private readonly orderStageService: OrderStageService,
+    private readonly getOrderStageDepartmentProcedure: GetOrderStageDepartmentProcedure,
+  ) {}
   // @Roles(UserRoleEnum.EMPLOYEE)
   @Get('available')
   findAvailableForUser(@Req() req: IRequestJWT) {
@@ -64,5 +68,10 @@ export class OrderStageController {
     @Body() body: BreakOrderStageDto,
   ) {
     return this.orderStageService.break(id, body);
+  }
+
+  @Get(':id/department')
+  getOrderStageDepartment(@Param('id', ParseIntPipe) id: number) {
+    return this.getOrderStageDepartmentProcedure.execute(id);
   }
 }

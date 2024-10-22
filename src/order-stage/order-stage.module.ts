@@ -7,6 +7,7 @@ import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { DepartmentModule } from '../department/department.module';
 import { User } from '../user/entities/user.model';
+import { orderStageProcedures } from './procedures';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { User } from '../user/entities/user.model';
     AuthModule,
     DepartmentModule,
   ],
-  providers: [OrderStageService],
+  providers: [OrderStageService, ...orderStageProcedures],
   exports: [OrderStageService],
   controllers: [OrderStageController],
 })

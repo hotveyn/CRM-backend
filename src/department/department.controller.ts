@@ -13,11 +13,15 @@ import { CreateDepartmentDto } from './dto/createDepartmentDto';
 import { Department } from './entities/department.model';
 import { DepartmentService } from './department.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { GetDepartmentBreaksProcedure } from './procedures/get-department-breaks.procedure';
 
 @UseGuards(JwtAuthGuard)
 @Controller('department')
 export class DepartmentController {
-  constructor(private departmentService: DepartmentService) {}
+  constructor(
+    private readonly departmentService: DepartmentService,
+    private readonly getDepartmentBreaksProcedure: GetDepartmentBreaksProcedure,
+  ) {}
 
   @Post()
   async create(@Body() departmentDto: CreateDepartmentDto) {
@@ -47,5 +51,10 @@ export class DepartmentController {
     @Body() departmentDto: CreateDepartmentDto,
   ): Promise<Department> {
     return this.departmentService.updateById(id, departmentDto);
+  }
+
+  @Get(':id/breaks')
+  async getDepartmentBreaks(@Param('id', ParseIntPipe) id: number) {
+    return await this.getDepartmentBreaksProcedure.execute(id);
   }
 }

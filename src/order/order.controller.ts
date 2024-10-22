@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -20,11 +21,21 @@ import { IRequestJWT } from '../auth/interfaces/IRequestJWT';
 import { Roles } from '../auth/roles.decorator';
 import { UserRoleEnum } from '../user/types/user-role.enum';
 import { CreateOrderByPrefabDto } from './dto/create-order-by-prefab.dto';
+import { GetOrdersDto } from './dto/get-orders.dto';
+import { GetOrdersProcedure } from './procedures/get-orders.procedure';
+import { MarkOrderAsBreakProcedure } from './procedures/mark-as-break.procedure';
+import { MarkOrderAsDefectiveDto } from './dto/mark-order-as-defective.dto';
+import { GetOrderStagesProcedure } from './procedures/get-order-stages.procedure';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly getOrdersProcedure: GetOrdersProcedure,
+    private readonly markOrderAsDefectiveProcedure: MarkOrderAsBreakProcedure,
+    private readonly getOrderStagesProcedure: GetOrderStagesProcedure,
+  ) {}
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
@@ -158,5 +169,23 @@ export class OrderController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.remove(id);
+  }
+
+  @Get('/')
+  getOrders(@Query() payload: GetOrdersDto) {
+    return this.getOrdersProcedure.execute(payload);
+  }
+
+  @Get('/:id/stages')
+  getOrderStages(@Param('id', ParseIntPipe) orderId: number) {
+    return this.getOrderStagesProcedure.execute(orderId);
+  }
+
+  @Patch('/:id/break')
+  markOrderAsBreak(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: MarkOrderAsDefectiveDto,
+  ) {
+    return this.markOrderAsDefectiveProcedure.execute(id, dto);
   }
 }

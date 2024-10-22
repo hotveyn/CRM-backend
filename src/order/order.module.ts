@@ -10,6 +10,8 @@ import { BreakModule } from '../break/break.module';
 import { DepartmentModule } from '../department/department.module';
 import { MonetaryMatrix } from '../monetary-matrix/entities/monetary-matrix.entity';
 import { Prefab } from '../prefab/entities/prefab.entity';
+import { ordersProcedures } from './procedures';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
@@ -19,9 +21,10 @@ import { Prefab } from '../prefab/entities/prefab.entity';
     UserModule,
     AuthModule,
     BreakModule,
+    PrismaModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService],
+  providers: [OrderService, ...ordersProcedures],
   exports: [OrderService],
 })
 export class OrderModule {}
