@@ -21,7 +21,6 @@ export class OrderStageService {
   ) {}
 
   async create(order: CreateOrderStageDto): Promise<OrderStage> {
-    console.log(order);
     return this.orderStageModel.create({ ...order });
   }
 

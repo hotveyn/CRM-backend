@@ -151,7 +151,6 @@ export class UserService {
     });
 
     updateUserDto.departments.forEach((departmentId: number) => {
-      console.log(departmentId);
       user.$add('department', departmentId);
     });
 

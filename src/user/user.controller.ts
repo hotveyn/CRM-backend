@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,11 +16,16 @@ import { UserService } from './user.service';
 import { Roles } from '../auth/roles.decorator';
 import { UserRoleEnum } from './types/user-role.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GetUsersDto } from './dto/get-users.dto';
+import { GetUsersProcedure } from './procedures/get-users.procedure';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly getUsersProcedure: GetUsersProcedure,
+  ) {}
 
   @Get('profile')
   getUser(@Req() req: IRequestJWT) {
@@ -35,7 +41,7 @@ export class UserController {
   }
 
   @Roles(UserRoleEnum.ADMIN)
-  @Get()
+  @Get('/normal')
   findAll() {
     return this.userService.findAllNormal();
   }
@@ -67,5 +73,10 @@ export class UserController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findById(id);
+  }
+
+  @Get('/')
+  getUsers(@Query() dto: GetUsersDto) {
+    return this.getUsersProcedure.execute(dto);
   }
 }

@@ -1,36 +1,29 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IExecutable } from '../../interfaces/executable.interface';
-import { GetOrdersDto } from '../dto/get-orders.dto';
 import { PrismaServiceToken, TPrismaService } from '../../prisma/prisma.client';
+import { GetUsersDto } from '../dto/get-users.dto';
 
 @Injectable()
-export class GetOrdersProcedure implements IExecutable {
+export class GetUsersProcedure implements IExecutable {
   constructor(
     @Inject(PrismaServiceToken) private readonly prisma: TPrismaService,
   ) {}
 
-  async execute(payload: GetOrdersDto) {
+  async execute(payload: GetUsersDto) {
     const [data, count] = await this.prisma.$transaction([
-      this.prisma.order.findMany({
+      this.prisma.user.findMany({
         where: {
-          status: payload.status,
+          role: payload.role,
         },
         skip: payload.offset,
         take: payload.limit,
         orderBy: {
           [payload.orderBy]: payload.orderDirection,
         },
-        include: {
-          type: {
-            select: {
-              name: true,
-            },
-          },
-        },
       }),
-      this.prisma.order.count({
+      this.prisma.user.count({
         where: {
-          status: payload.status,
+          role: payload.role,
         },
       }),
     ]);

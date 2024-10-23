@@ -43,10 +43,9 @@ export class GetUsersStatProcedure implements IExecutable<any> {
 
       user.orderStages.forEach((orderStage) => {
         serUser.stages += 1;
-        serUser.money += Math.floor(
-          orderStage.order.price * (orderStage.percent / 100),
-        );
+        serUser.money += orderStage.order.price * (orderStage.percent / 100);
       });
+      serUser.money = Math.floor(serUser.money);
       result.push(serUser);
     });
 

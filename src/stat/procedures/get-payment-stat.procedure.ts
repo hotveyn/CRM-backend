@@ -54,9 +54,7 @@ export class GetPaymentStatProcedure implements IExecutable<any> {
 
       user.orderStages.forEach((orderStage) => {
         if (orderStage.department && orderStage.department.id) {
-          const money = Math.floor(
-            orderStage.order.price * (orderStage.percent / 100),
-          );
+          const money = orderStage.order.price * (orderStage.percent / 100);
 
           userRow[orderStage.department.id].sum += money;
           userRow.sum += money;
@@ -65,10 +63,10 @@ export class GetPaymentStatProcedure implements IExecutable<any> {
           total.sum += money;
         }
       });
-
+      userRow.sum = Math.floor(userRow.sum);
       result.push(userRow);
     });
-
+    total.sum = Math.floor(total.sum);
     result.push(total);
 
     return result;
