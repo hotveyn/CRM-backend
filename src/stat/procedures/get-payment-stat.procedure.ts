@@ -65,7 +65,7 @@ export class GetPaymentStatProcedure implements IExecutable<any> {
       });
       userRow.sum = Math.floor(userRow.sum);
       Object.keys(userRow).forEach((key) => {
-        if (userRow[key].sum) userRow[key].sum = Math.floor(userRow[key].sum);
+        if (userRow[key].sum) userRow[key].sum = userRow[key].sum.toFixed(1);
       });
       result.push(userRow);
     });
