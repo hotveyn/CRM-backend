@@ -17,7 +17,7 @@ export class GetPaymentStatProcedure implements IExecutable<any> {
     private readonly departmentModel: typeof Department,
   ) {}
 
-  async execute(startDate: string, endDate: string  ): Promise<any> {
+  async execute(startDate: string, endDate: string): Promise<any> {
     const users = await this.userModel.findAll({
       where: {
         role: UserRoleEnum.EMPLOYEE,
@@ -64,6 +64,9 @@ export class GetPaymentStatProcedure implements IExecutable<any> {
         }
       });
       userRow.sum = Math.floor(userRow.sum);
+      Object.keys(userRow).forEach((key) => {
+        if (userRow[key].sum) userRow[key].sum = Math.floor(userRow[key].sum);
+      });
       result.push(userRow);
     });
     total.sum = Math.floor(total.sum);
