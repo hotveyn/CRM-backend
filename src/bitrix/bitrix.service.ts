@@ -11,10 +11,13 @@ export class BitrixService {
 
   async import(dto: BitrixImportDto) {
     this.logger.debug(
-      `BITRIX IS TRYING IMPORT SOMETHING SHIET, ${JSON.stringify(dto)}`,
+      `Trying to make request to bitrix to https://neonbro.bitrix24.ru/rest/21686/167fxe8wssmz1lgl/crm.deal.get.json?id=${
+        dto.document_id[2].split('_')[1]
+      }`,
     );
+
     const res = await fetch(
-      `https://neonbro.bitrix24.ru/rest/21686/l53sdllzqx9tebg4/crm.deal.get.json?id=${
+      `https://neonbro.bitrix24.ru/rest/21686/167fxe8wssmz1lgl/crm.deal.get.json?id=${
         dto.document_id[2].split('_')[1]
       }`,
     );
