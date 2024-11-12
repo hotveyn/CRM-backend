@@ -10,6 +10,9 @@ export class BitrixService {
   constructor(readonly orderService: OrderService) {}
 
   async import(dto: BitrixImportDto) {
+    this.logger.debug(
+      `BITRIX IS TRYING IMPORT SOMETHING SHIET, ${JSON.stringify(dto)}`,
+    );
     const res = await fetch(
       `https://neonbro.bitrix24.ru/rest/21686/l53sdllzqx9tebg4/crm.deal.get.json?id=${
         dto.document_id[2].split('_')[1]
@@ -17,6 +20,8 @@ export class BitrixService {
     );
 
     const data: IBitrixResponse = await res.json();
+
+    this.logger.debug(`Got response from bitrix: ${JSON.stringify(data)}`);
 
     if (+data.result.UF_CRM_1656491267678 < 2) {
       const split = data.result.TITLE.split('-').map((str) => {

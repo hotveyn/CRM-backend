@@ -9,7 +9,6 @@ export class BitrixController {
 
   @Post()
   import(@Body() bitrixImportDto: BitrixImportDto) {
-    this.logger.log('BITRIX IS TRYING IMPORT SOMETHING SHIET');
     return this.bitrixService.import(bitrixImportDto);
   }
 }
