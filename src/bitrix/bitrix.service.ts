@@ -11,15 +11,15 @@ export class BitrixService {
 
   async import(dto: BitrixImportDto) {
     this.logger.debug(
-      `Trying to make request to bitrix to https://neonbro.bitrix24.ru/rest/21686/167fxe8wssmz1lgl/crm.deal.get.json?id=${
-        dto.document_id[2].split('_')[1]
-      }`,
+      `Trying to make request to bitrix to https://neonbro.bitrix24.ru/rest/21686/${
+        process.env.BITRIX_SECRET
+      }/crm.deal.get.json?id=${dto.document_id[2].split('_')[1]}`,
     );
 
     const res = await fetch(
-      `https://neonbro.bitrix24.ru/rest/21686/167fxe8wssmz1lgl/crm.deal.get.json?id=${
-        dto.document_id[2].split('_')[1]
-      }`,
+      `https://neonbro.bitrix24.ru/rest/21686/${
+        process.env.BITRIX_SECRET
+      }/crm.deal.get.json?id=${dto.document_id[2].split('_')[1]}`,
     );
 
     const data: IBitrixResponse = await res.json();
