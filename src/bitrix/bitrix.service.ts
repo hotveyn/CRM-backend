@@ -10,7 +10,7 @@ export class BitrixService {
   constructor(readonly orderService: OrderService) {}
 
   async import(dto: BitrixImportDto) {
-    console.log(process.env.BITRIX_SECRET);
+    this.logger.debug('BITRIX SECERT: ' + process.env.BITRIX_SECRET);
     this.logger.debug(
       `Trying to make request to bitrix to https://neonbro.bitrix24.ru/rest/21686/${
         process.env.BITRIX_SECRET
